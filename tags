@@ -17,7 +17,6 @@ EOF	srcs/requirements/bonus/ftp/tools/ftp.sh	/^adduser -D $FTP_USER && cat << EO
 EOF	srcs/requirements/mariadb/tools/init_database.sh	/^	cat << EOF | mariadb -u root$/;"	h
 EOF	srcs/requirements/mariadb/tools/init_database.sh	/^	cat << EOF | mysql_secure_installation$/;"	h
 HOME_PATH	Makefile	/^HOME_PATH					= \/home\/tpouget$/;"	m
-Inception	README.md	/^# Inception$/;"	c
 MySQLi	srcs/requirements/wordpress/conf/php.ini	/^[MySQLi]$/;"	s
 OCI8	srcs/requirements/wordpress/conf/php.ini	/^[OCI8]$/;"	s
 ODBC	srcs/requirements/wordpress/conf/php.ini	/^[ODBC]$/;"	s
