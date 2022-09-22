@@ -167,6 +167,7 @@ mode	srcs/requirements/wordpress/conf/www.conf	/^listen.mode = 0660$/;"	k	sectio
 mysqlnd	srcs/requirements/wordpress/conf/php.ini	/^[mysqlnd]$/;"	s
 name	srcs/requirements/wordpress/conf/php.ini	/^session.name = PHPSESSID$/;"	k	section:Session
 opcache	srcs/requirements/wordpress/conf/php.ini	/^[opcache]$/;"	s
+open_dockerfiles	Makefile	/^open_dockerfiles:$/;"	t
 openssl	srcs/requirements/wordpress/conf/php.ini	/^[openssl]$/;"	s
 output_buffering	srcs/requirements/wordpress/conf/php.ini	/^output_buffering = 4096$/;"	k	section:PHP
 output_compression	srcs/requirements/wordpress/conf/php.ini	/^zlib.output_compression = Off$/;"	k	section:PHP

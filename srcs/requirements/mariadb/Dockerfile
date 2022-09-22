@@ -3,7 +3,6 @@ FROM debian:buster
 RUN apt update && apt install -y \
 	mariadb-server \
 	procps \
-	top \
 && apt clean
 
 # Copy initialization script

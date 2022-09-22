@@ -1,8 +1,6 @@
 #! /bin/sh
 
-
 WORDPRESS_CONFIG_FILE=/var/www/wordpress/wp-config.php
-
 
 # WP-CLI = Command line interface for WordPress
 install_wp_cli()
@@ -12,14 +10,12 @@ install_wp_cli()
 	mv wp-cli.phar /usr/local/bin/wp
 }
 
-
 # Download wordpress
 download_wordpress()
 {
 	echo "Downloading WordPress"
 	wp core download --path=/var/www/wordpress --force --skip-content
 }
-
 
 # Configuration of wp-config.php
 config_wordpress()
@@ -37,7 +33,6 @@ config_wordpress()
 	sed -i "61i define('WP_REDIS_HOST', 'redis');" wp-config.php
 	sed -i "62i define('FS_METHOD', 'direct');" wp-config.php
 }
-
 
 # Wordpress installation
 install_wordpress()
@@ -60,13 +55,11 @@ install_wordpress()
 	wp theme install twentytwentytwo --force
 }
 
-
 # Create the second wordpress user
 create_user()
 {
 	wp user create ${WP_USER} ${WP_USER_EMAIL} --user_pass=${WP_USER_PASSORD}
 }
-
 
 # Install and activate wordpress extensions
 install_redis_extension()
@@ -76,7 +69,6 @@ install_redis_extension()
 	wp plugin install redis-cache --activate
 	wp redis enable
 }
-
 
 main()
 {
@@ -97,6 +89,5 @@ main()
 	fi
 }
 
-
 main
-exec php-fpm8 -F
+exec php-fpm7.3 -F

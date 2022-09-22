@@ -128,3 +128,6 @@ create_directories:
 
 rm_directories:
 	sudo rm -rf ${HOME_PATH}/data/mariadb ${HOME_PATH}/data/wordpress
+
+open_dockerfiles:
+	vim srcs/requirements/mariadb/Dockerfile srcs/requirements/wordpress/Dockerfile srcs/requirements/nginx/Dockerfile

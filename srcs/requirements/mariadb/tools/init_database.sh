@@ -1,8 +1,6 @@
 #! /bin/sh
 
-
 DATADIR=/var/lib/mysql
-
 
 # This function set the default options to mariadb database
 secure_database()
@@ -36,20 +34,19 @@ main()
 	if [ ! -z "$(ls -A $DATADIR)" ];
 	then
 		echo "The database doesn't need to be created."
-		rc-service mariadb start
-		rc-service mariadb stop
+		systemctl start mariadb 
+		systemctl stop mariadb 
 	else
 		echo "Database installation ..."
 		/etc/init.d/mariadb setup
-		rc-service mariadb start
+		systemctl start mariadb
 		secure_database
 		create_database
-		rc-service mariadb restart
-		rc-service mariadb stop
+		systemctl restart mariadb
+		systemctl stop mariadb 
 		echo "The database installation is completed."
 	fi
 }
-
 
 main
 exec /usr/bin/mysqld --user=mysql --console

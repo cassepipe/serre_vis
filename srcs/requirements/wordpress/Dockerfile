@@ -4,26 +4,14 @@ FROM debian:buster
 # Upgrade the currently installed packages
 # And install php8 and php8 packages
 RUN apt update && apt install -y \
-	curl\
-	mariadb-client\
-	php\
-	php8-curl\
-	php8-ctype\
-	php8-dom\
-	php8-exif\
-	php8-fileinfo\
-	php8-fpm\
-	php8-gd\
-	php8-iconv\
-	php8-intl\
-	php8-mbstring\
-	php8-mysqli\
-	php8-pecl-imagick\
-	php8-phar\
-	php8-redis\
-	php8-session\
-	php8-xml\
-	php8-zip \
+		curl \
+		procps \
+		php \
+		php-gd \
+		php-mysql \
+		php-mysqlnd \
+		php-getid3 \
+		php-fpm \
 && apt clean
 
 # Create the www user
@@ -32,8 +20,8 @@ RUN useradd www && \
 		chown www:www /var/www/wordpress
 
 # Copy php config files
-COPY ./conf/www.conf	/etc/php8/php-fpm.d/
-COPY ./conf/php.ini		/etc/php8/
+COPY ./conf/www.conf	/etc/php7.3/php-fpm.d/
+COPY ./conf/php.ini		/etc/php7.3/
 
 # Copy the wordpress installation script
 COPY ./tools/wordpress_install.sh	/
