@@ -24,6 +24,8 @@ COPY ./conf/php.ini		/etc/php7.3/
 COPY ./tools/wordpress_install.sh	/
 RUN chmod +x /wordpress_install.sh
 
+RUN mkdir /run/php
+
 # Expose the port 9000
 EXPOSE 9000
 
