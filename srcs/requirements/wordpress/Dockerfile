@@ -1,8 +1,5 @@
 FROM debian:buster
 
-# Update the index of available packages,
-# Upgrade the currently installed packages
-# And install php8 and php8 packages
 RUN apt update && apt install -y \
 		curl \
 		procps \

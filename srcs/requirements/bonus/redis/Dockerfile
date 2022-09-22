@@ -1,14 +1,13 @@
-# syntax=docker/dockerfile:1
-
-# Get the container Image
-FROM alpine:3.16
+FROM debian:buster
 
 # Update the index of available packages,
 # Upgrade the currently installed packages
 # And install redis
-RUN apk update && apk upgrade && apk add --no-cache\
+RUN apt update && apt install -y \
 	redis\
-	php8-redis
+	php-redis \
+&& apt clean
+
 
 # Edit the redis configuration file
 RUN mv /etc/redis.conf /etc/redis.conf.backup
