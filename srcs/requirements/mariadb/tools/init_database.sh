@@ -34,19 +34,19 @@ main()
 	if [ ! -z "$(ls -A $DATADIR)" ];
 	then
 		echo "The database doesn't need to be created."
-		systemctl start mariadb 
-		systemctl stop mariadb 
+		service mysql start
+		service mysql stop
 	else
 		echo "Database installation ..."
-		/etc/init.d/mariadb setup
-		systemctl start mariadb
+		/etc/init.d/mysql setup
+		service mysql start
 		secure_database
 		create_database
-		systemctl restart mariadb
-		systemctl stop mariadb 
+		service mysql restart
+		service mysql stop
 		echo "The database installation is completed."
 	fi
 }
 
 main
-exec /usr/bin/mysqld --user=mysql --console
+exec /usr/sbin/mysqld --user=mysql --console

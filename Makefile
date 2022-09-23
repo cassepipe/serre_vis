@@ -38,7 +38,7 @@ DOCKER_COMPOSE_COMMAND		= sudo docker compose \
 # **************************************************************************** #
 
 
-up: create_directories
+up: | ${HOME_PATH}/data/mariadb ${HOME_PATH}/data/wordpress
 	${DOCKER_COMPOSE_COMMAND} up --detach --pull never --build
 
 clean: stop
@@ -51,19 +51,19 @@ fclean: stop rm_directories
 re: fclean up
 
 debug_nginx:
-	${DOCKER_COMPOSE_COMMAND} exec inception_nginx bash
+	${DOCKER_COMPOSE_COMMAND} exec nginx bash
 
 debug_mariadb:
-	${DOCKER_COMPOSE_COMMAND} exec inception_mariadb bash
+	${DOCKER_COMPOSE_COMMAND} exec mariadb bash
 
 debug_wordpress:
-	${DOCKER_COMPOSE_COMMAND} exec inception_wordpress bash
+	${DOCKER_COMPOSE_COMMAND} exec wordpress bash
 
 debug_redis:
-	${DOCKER_COMPOSE_COMMAND} exec inception_redis bash
+	${DOCKER_COMPOSE_COMMAND} exec redis bash
 
 debug_ftp:
-	${DOCKER_COMPOSE_COMMAND} exec inception_ftp bash
+	${DOCKER_COMPOSE_COMMAND} exec ftp bash
 
 debug_adminer:
 	${DOCKER_COMPOSE_COMMAND} exec adminer bash
@@ -123,8 +123,12 @@ stop:
 restart:
 	${DOCKER_COMPOSE_COMMAND} restart
 
-create_directories:
-	mkdir -p ${HOME_PATH}/data/mariadb ${HOME_PATH}/data/wordpress
+${HOME_PATH}/data/mariadb:
+	mkdir -p ${HOME_PATH}/data/mariadb
+
+${HOME_PATH}/data/wordpress:
+	mkdir -p ${HOME_PATH}/data/wordpress
+
 
 rm_directories:
 	sudo rm -rf ${HOME_PATH}/data/mariadb ${HOME_PATH}/data/wordpress
