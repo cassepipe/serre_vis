@@ -124,10 +124,10 @@ restart:
 	${DOCKER_COMPOSE_COMMAND} restart
 
 ${HOME_PATH}/data/mariadb:
-	mkdir -p ${HOME_PATH}/data/mariadb
+	sudo mkdir -p ${HOME_PATH}/data/mariadb
 
 ${HOME_PATH}/data/wordpress:
-	mkdir -p ${HOME_PATH}/data/wordpress
+	sudo mkdir -p ${HOME_PATH}/data/wordpress
 
 
 rm_directories:

@@ -14,7 +14,7 @@ install_wp_cli()
 download_wordpress()
 {
 	echo "Downloading WordPress"
-	wp core download --path=/var/www/wordpress --force --skip-content
+	wp core download --path=/var/www/wordpress --force #--skip-content
 }
 
 # Configuration of wp-config.php
@@ -28,10 +28,9 @@ config_wordpress()
 		--dbuser=${MYSQL_USER} \
 		--dbpass=${MYSQL_PASSWORD} \
 		--dbhost=${MYSQL_DB_HOST} \
-		--dbprefix=${MYSQL_DB_PREFIX}
+		#--dbprefix=${MYSQL_DB_PREFIX}
 
-	sed -i "61i define('WP_REDIS_HOST', 'redis');" wp-config.php
-	sed -i "62i define('FS_METHOD', 'direct');" wp-config.php
+	#sed -i "62i define('FS_METHOD', 'direct');" wp-config.php
 }
 
 # Wordpress installation
@@ -61,15 +60,6 @@ create_user()
 	wp user create ${WP_USER} ${WP_USER_EMAIL} --user_pass=${WP_USER_PASSORD}
 }
 
-# Install and activate wordpress extensions
-install_redis_extension()
-{
-	echo "Installing the Redis extension"
-	cd /var/www/wordpress
-	wp plugin install redis-cache --activate
-	wp redis enable
-}
-
 main()
 {
 	install_wp_cli
@@ -82,7 +72,6 @@ main()
 		config_wordpress
 		install_wordpress
 		create_user
-		install_redis_extension
 		chown -R www:www /var/www/wordpress
 		wp cron event run --due-now
 		echo "The WordPress installation is completed."

@@ -1,3 +1,4 @@
+# Deprecated ?
 #version: '3.8'
 
 services:
@@ -39,39 +40,6 @@ services:
       - wordpress
     #networks:
     #  - docker_network
-    #restart: on-failure
-
-  #redis:
-  #  container_name: redis
-  #  build: requirements/bonus/redis
-  #  image: redis:inception
-  #  #networks:
-  #  #  - docker_network
-  #  #restart: on-failure
-
-  #adminer:
-  #  container_name: adminer
-  #  build: requirements/bonus/adminer
-  #  image: adminer:inception
-  #  depends_on:
-  #    - wordpress
-  #  volumes:
-  #    - wordpress_volume:/var/www/wordpress
-  #  #restart: on-failure
-
-  #ftp:
-  #  container_name: ftp
-  #  build: requirements/bonus/ftp
-  #  image: ftp:inception
-  #  env_file: .env
-  #  ports:
-  #    - "21:21"
-  #  networks:
-  #    - docker_network
-  #  depends_on:
-  #    - wordpress
-  #  volumes:
-  #    - wordpress_volume:/var/www/wordpress
     #restart: on-failure
 
 #networks:
