@@ -40,6 +40,7 @@ DOCKER_COMPOSE_COMMAND		= sudo docker compose \
 
 up: | ${HOME_PATH}/data/mariadb ${HOME_PATH}/data/wordpress
 	${DOCKER_COMPOSE_COMMAND} up --detach --pull never --build
+	$(MAKE) ps
 
 clean: stop
 	sudo docker system prune -a --force
