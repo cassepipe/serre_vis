@@ -30,4 +30,5 @@ RUN mkdir /run/php
 EXPOSE 9000
 
 # Install wp and run php
-CMD ["/wordpress_install.sh"]
+ENTRYPOINT ["/wordpress_install.sh"]
+CMD ["php-fpm7.3", "-F"]

@@ -1,0 +1,330 @@
+#!/bin/sh
+
+## WORDPRESS
+#SITE_TITLE=Inception
+#SITE_URL=https://tpouget.42.fr
+
+## WORDPRESS ADMIN USER
+#WP_ADMIN_USER=tpouget
+#WP_ADMIN_PASSWORD=E72sX9nQIWhFAc6zjkvQmMJphYxVuqu
+#WP_ADMIN_EMAIL=contact@tpouget.42.fr
+
+## WORDPRESS SECOND USER
+#WP_USER=utilisateur
+#WP_USER_PASSORD=eWV2G0GmNQoD5YsP7I6PyFg6nMZCLVr
+#WP_USER_EMAIL=user@charles-mariot.fr
+
+## MARIADB
+#MYSQL_DB_HOST=mariadb:3306
+#MYSQL_USER=mariadb_db
+#MYSQL_PASSWORD=5nC4H9N97nWQKQkJtuAqvMRizZKnOyG
+#MYSQL_DATABASE=wordpress
+#MYSQL_DB_PREFIX=wp_
+
+config="my.cnf"
+
+trap "interrupt" 1 2 3 6 15
+
+rootpass="$correcthorsebatterystaple"
+basedir=
+defaults_file=
+defaults_extra_file=
+no_defaults=
+
+print_defaults="/usr/bin/my_print_defaults"
+mysql_command="/usr/bin/mariadb"
+
+prepare() {
+	# Which config file must I actually create ?
+	touch $config
+	chmod 600 $config
+}
+
+# create a simple my.cnf file to be able to pass the root password to the mysql
+# client without putting it on the command line
+
+make_config() {
+
+	echo "# init_script config file" >$config
+	echo "[mysql]" >>$config
+	echo "user=root" >>$config
+	echo "password='$rootpass" >>$config
+}
+
+get_root_password() {
+	make_config
+	mysql -e "show create user root@localhost"
+	if grep -q unix_socket $output; then
+		emptypass=0
+	fi
+	echo "OK, successfully used password, moving on..."
+	echo
+}
+
+set_root_password() {
+
+	if [ "$rootpass" = "" ]; then
+		echo "Sorry, you can't use an empty password here."
+		echo
+		return 1
+	fi
+
+	mysql -e "UPDATE mysql.global_priv SET priv=json_set(priv, '$.plugin', 'mysql_native_password', '$.authentication_string', PASSWORD('$rootpass')) WHERE User='root';"
+	if [ $? -eq 0 ]; then
+		echo "Password updated successfully!"
+		echo "Reloading privilege tables.."
+		reload_privilege_tables
+		if [ $? -eq 1 ]; then
+			clean_and_exit
+		fi
+		echo
+		make_config
+	else
+		echo "Password update failed!"
+		clean_and_exit
+	fi
+
+	return 0
+}
+
+remove_anonymous_users() {
+	mysql -e "DELETE FROM mysql.global_priv WHERE User='';"
+	if [ $? -eq 0 ]; then
+		echo "Successfully removed anon users"
+	else
+		echo "Failed at removing anon users"
+		clean_and_exit
+	fi
+
+	return 0
+}
+
+remove_remote_root() {
+	mysql -e "DELETE FROM mysql.global_priv WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+	if [ $? -eq 0 ]; then
+		echo "Successfully removed remote root acess"
+	else
+		echo "Failed at removing remote root access"
+	fi
+}
+
+remove_test_database() {
+	echo " - Dropping test database..."
+	mysql -e "DROP DATABASE IF EXISTS test;"
+	if [ $? -eq 0 ]; then
+		echo "Successfully removed test db!"
+	else
+		echo "Could not remove test db!  Not critical, keep moving..."
+	fi
+
+	echo " - Removing privileges on test database..."
+	mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'"
+	if [ $? -eq 0 ]; then
+		echo "Succesfully removed privileges on test db"
+	else
+		echo "Could not remove test bd priviledges! Not critical, keep moving..."
+	fi
+
+	return 0
+}
+
+reload_privilege_tables() {
+	mysql -e "FLUSH PRIVILEGES;"
+	if [ $? -eq 0 ]; then
+		echo " ... Success!"
+		return 0
+	else
+		echo " ... Failed!"
+		return 1
+	fi
+}
+
+interrupt() {
+	echo
+	echo "Aborting!"
+	echo
+	cleanup
+	exit 1
+}
+
+cleanup() {
+	echo "Cleaning up..."
+	rm -f $config 
+}
+
+# Remove the files before exiting.
+clean_and_exit() {
+	cleanup
+	exit 1
+}
+
+# THE ACTUAL SCRIPT STARTS HERE
+
+prepare
+
+echo "In order to log into MariaDB to secure it, we'll need the current"
+echo "password for the root user. If you've just installed MariaDB, and"
+echo "haven't set the root password yet, you should just press enter here."
+echo
+
+# If a root user is already set then, this config file must exist ?
+if [[ ! -f /root/my.cnf ]]
+	get_root_password
+
+#
+# Set the root password
+#
+
+echo "Setting the root password or using the unix_socket ensures that nobody"
+echo "can log into the MariaDB root user without the proper authorisation."
+echo
+
+while true ; do
+	if [ $emptypass -eq 1 ]; then
+		echo $echo_n "Enable unix_socket authentication? [Y/n] $echo_c"
+	else
+		echo "You already have your root account protected, so you can safely answer 'n'."
+		echo
+		echo $echo_n "Switch to unix_socket authentication [Y/n] $echo_c"
+	fi
+	read reply
+	validate_reply $reply && break
+done
+
+if [ "$reply" = "n" ]; then
+	echo " ... skipping."
+else
+	emptypass=0
+	do_query "UPDATE mysql.global_priv SET priv=json_set(priv, '$.password_last_changed', UNIX_TIMESTAMP(), '$.plugin', 'mysql_native_password', '$.authentication_string', 'invalid', '$.auth_or', json_array(json_object(), json_object('plugin', 'unix_socket'))) WHERE User='root';"
+	if [ $? -eq 0 ]; then
+		echo "Enabled successfully!"
+		echo "Reloading privilege tables.."
+		reload_privilege_tables
+		if [ $? -eq 1 ]; then
+			clean_and_exit
+		fi
+		echo
+	else
+		echo "Failed!"
+		clean_and_exit
+	fi
+fi
+echo
+
+while true ; do
+	if [ $emptypass -eq 1 ]; then
+		echo $echo_n "Set root password? [Y/n] $echo_c"
+	else
+		echo "You already have your root account protected, so you can safely answer 'n'."
+		echo
+		echo $echo_n "Change the root password? [Y/n] $echo_c"
+	fi
+	read reply
+	validate_reply $reply && break
+done
+
+if [ "$reply" = "n" ]; then
+	echo " ... skipping."
+else
+	status=1
+	while [ $status -eq 1 ]; do
+		set_root_password
+		status=$?
+	done
+fi
+echo
+
+
+#
+# Remove anonymous users
+#
+
+echo "By default, a MariaDB installation has an anonymous user, allowing anyone"
+echo "to log into MariaDB without having to have a user account created for"
+echo "them.  This is intended only for testing, and to make the installation"
+echo "go a bit smoother.  You should remove them before moving into a"
+echo "production environment."
+echo
+
+while true ; do
+	echo $echo_n "Remove anonymous users? [Y/n] $echo_c"
+	read reply
+	validate_reply $reply && break
+done
+if [ "$reply" = "n" ]; then
+	echo " ... skipping."
+else
+	remove_anonymous_users
+fi
+echo
+
+
+#
+# Disallow remote root login
+#
+
+echo "Normally, root should only be allowed to connect from 'localhost'.  This"
+echo "ensures that someone cannot guess at the root password from the network."
+echo
+while true ; do
+	echo $echo_n "Disallow root login remotely? [Y/n] $echo_c"
+	read reply
+	validate_reply $reply && break
+done
+if [ "$reply" = "n" ]; then
+	echo " ... skipping."
+else
+	remove_remote_root
+fi
+echo
+
+
+#
+# Remove test database
+#
+
+echo "By default, MariaDB comes with a database named 'test' that anyone can"
+echo "access.  This is also intended only for testing, and should be removed"
+echo "before moving into a production environment."
+echo
+
+while true ; do
+	echo $echo_n "Remove test database and access to it? [Y/n] $echo_c"
+	read reply
+	validate_reply $reply && break
+done
+
+if [ "$reply" = "n" ]; then
+	echo " ... skipping."
+else
+	remove_test_database
+fi
+echo
+
+
+#
+# Reload privilege tables
+#
+
+echo "Reloading the privilege tables will ensure that all changes made so far"
+echo "will take effect immediately."
+echo
+
+while true ; do
+	echo $echo_n "Reload privilege tables now? [Y/n] $echo_c"
+	read reply
+	validate_reply $reply && break
+done
+
+if [ "$reply" = "n" ]; then
+	echo " ... skipping."
+else
+	reload_privilege_tables
+fi
+echo
+
+cleanup
+
+echo
+echo "All done!  If you've completed all of the above steps, your MariaDB"
+echo "installation should now be secure."

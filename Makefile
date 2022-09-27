@@ -51,23 +51,44 @@ fclean: stop rm_directories
 
 re: fclean up
 
-debug_nginx:
+inspect_nginx:
 	${DOCKER_COMPOSE_COMMAND} exec nginx bash
 
-debug_mariadb:
+inspect_mariadb:
 	${DOCKER_COMPOSE_COMMAND} exec mariadb bash
 
-debug_wordpress:
+inspect_wordpress:
 	${DOCKER_COMPOSE_COMMAND} exec wordpress bash
 
-debug_redis:
-	${DOCKER_COMPOSE_COMMAND} exec redis bash
+debug_nginx:
+	${DOCKER_COMPOSE_COMMAND} build
+	docker run --rm -it --env-file=srcs/.env --entrypoint ""  inception-nginx /bin/bash
 
-debug_ftp:
-	${DOCKER_COMPOSE_COMMAND} exec ftp bash
+debug_mariadb:
+	${DOCKER_COMPOSE_COMMAND} build
+	docker run --rm -it --env-file=srcs/.env  --entrypoint ""  inception-mariadb /bin/bash
 
-debug_adminer:
-	${DOCKER_COMPOSE_COMMAND} exec adminer bash
+debug_wordpress:
+	${DOCKER_COMPOSE_COMMAND} build
+	docker run --rm -it --env-file=srcs/.env  --entrypoint ""  inception-wordpress /bin/bash
+
+run_nginx:
+	${DOCKER_COMPOSE_COMMAND} build
+	docker run --rm -it --env-file=srcs/.env -d  inception-nginx /bin/bash
+
+run_mariadb:
+	${DOCKER_COMPOSE_COMMAND} build
+	docker run --rm -it --env-file=srcs/.env -d inception-mariadb 
+
+run_wordpress:
+	${DOCKER_COMPOSE_COMMAND} build
+	docker run --rm -it --env-file=srcs/.env -d inception-wordpress
+
+stop_all:
+	docker stop `docker ps -a -q`
+
+remove_exited:
+	docker rm `docker ps -a -q`
 
 log_nginx:
 	${DOCKER_COMPOSE_COMMAND} logs --follow nginx
@@ -77,12 +98,6 @@ log_mariadb:
 
 log_wordpress:
 	${DOCKER_COMPOSE_COMMAND} logs --follow wordpress
-
-log_redis:
-	${DOCKER_COMPOSE_COMMAND} logs --follow redis
-
-log_ftp:
-	${DOCKER_COMPOSE_COMMAND} logs --follow ftp
 
 top_nginx:
 	sudo docker top nginx
