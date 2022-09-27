@@ -103,4 +103,4 @@ main()
 }
 
 main
-exec "@"
+exec "$@"

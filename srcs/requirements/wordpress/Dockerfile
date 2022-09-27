@@ -1,3 +1,5 @@
+# ./tools/wordpress_install.sh	/
+
 FROM debian:buster
 
 RUN apt update && apt install -y \
