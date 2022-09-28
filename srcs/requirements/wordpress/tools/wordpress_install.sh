@@ -1,26 +1,5 @@
 #! /bin/sh
 
-## WORDPRESS
-#SITE_TITLE=Inception
-#SITE_URL=https://tpouget.42.fr
-
-## WORDPRESS ADMIN USER
-#WP_ADMIN_USER=tpouget
-#WP_ADMIN_PASSWORD=E72sX9nQIWhFAc6zjkvQmMJphYxVuqu
-#WP_ADMIN_EMAIL=contact@tpouget.42.fr
-
-## WORDPRESS SECOND USER
-#WP_USER=utilisateur
-#WP_USER_PASSORD=eWV2G0GmNQoD5YsP7I6PyFg6nMZCLVr
-#WP_USER_EMAIL=user@charles-mariot.fr
-
-## MARIADB
-#MYSQL_DB_HOST=mariadb:3306
-#MYSQL_USER=mariadb_db
-#MYSQL_PASSWORD=5nC4H9N97nWQKQkJtuAqvMRizZKnOyG
-#MYSQL_DATABASE=wordpress
-#MYSQL_DB_PREFIX=wp_
-
 WORDPRESS_CONFIG_FILE=/var/www/wordpress/wp-config.php
 
 # WP-CLI = Command line interface for WordPress
@@ -48,7 +27,7 @@ config_wordpress()
 		--dbname=${MYSQL_DATABASE} \
 		--dbuser=${MYSQL_USER} \
 		--dbpass=${MYSQL_PASSWORD} \
-		--dbhost=${MYSQL_DB_HOST} \
+		--dbhost=${MYSQL_DATABASE_HOST} \
 		--allow-root 
 		#--dbprefix=${MYSQL_DB_PREFIX} \
 
@@ -80,7 +59,7 @@ install_wordpress()
 # Create the second wordpress user
 create_user()
 {
-	wp user create ${WP_USER} ${WP_USER_EMAIL} --user_pass=${WP_USER_PASSORD}
+	wp user create ${WP_USER} ${WP_USER_EMAIL} --user_pass=${WP_USER_PASSWORD}
 }
 
 main()

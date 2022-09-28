@@ -35,7 +35,7 @@ stop_server()
 # Create the wordpress database
 create_database()
 {
-	mariadb <<EOF
+	mysql <<EOF
 CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
 CREATE USER IF NOT EXISTS $MYSQL_USER;
 GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO "$MYSQL_USER"@"localhost" IDENTIFIED BY "$MYSQL_PASSWORD";
@@ -46,21 +46,20 @@ EOF
 
 run_server()
 {
-	/usr/sbin/mysqld --bind-address=0.0.0.0 --port=3306 --user=$MYSQL_USER
+	/usr/sbin/mysqld --bind-address=0.0.0.0 --port=3306
 }
 
 main()
 {
 	service mysql start
 	create_database
-	#mysqladmin password $MYSQL_PASSWORD
-	service mysql stop
+	#service mysql stop
 }
 
 launch()
 {
-	exec /usr/sbin/mysqld --bind-address=0.0.0.0 --port=3306 --user=$MYSQL_USER
+	exec /usr/sbin/mysqld --bind-address=0.0.0.0 --port=3306
 }
 
-main
-exec "$@"
+#main
+#exec "$@"
