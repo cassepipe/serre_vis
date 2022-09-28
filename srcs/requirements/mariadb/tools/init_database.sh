@@ -18,48 +18,43 @@
 #MYSQL_USER=mariadb_db
 #MYSQL_PASSWORD=5nC4H9N97nWQKQkJtuAqvMRizZKnOyG
 #MYSQL_DATABASE=wordpress
-#MYSQL_DB_PREFIX=wp_
+#MYSQL_DATABASE_PREFIX=wp_
 
 set -o vi
-
-start_server()
-{
-	service mysql start
-}
-
-stop_server()
-{
-	service mysql stop
-}
 
 # Create the wordpress database
 create_database()
 {
-	mysql <<EOF
-CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
-CREATE USER IF NOT EXISTS $MYSQL_USER;
-GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO "$MYSQL_USER"@"localhost" IDENTIFIED BY "$MYSQL_PASSWORD";
-GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO "$MYSQL_USER"@"wordpress" IDENTIFIED BY "$MYSQL_PASSWORD";
-FLUSH PRIVILEGES;
-EOF
-}
-
-run_server()
-{
-	/usr/sbin/mysqld --bind-address=0.0.0.0 --port=3306
+	mysql <<-EOF
+			CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
+			CREATE USER IF NOT EXISTS $MYSQL_USER;
+			GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO "$MYSQL_USER"@"%" IDENTIFIED BY "$MYSQL_PASSWORD";
+			DELETE FROM mysql.user WHERE User='';
+			DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+			DROP DATABASE IF EXISTS test;
+			DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';
+			FLUSH PRIVILEGES;
+			EOF
+	return $?
 }
 
 main()
 {
 	service mysql start
-	create_database
-	#service mysql stop
+	sleep 1
+	ret=create_database
+	if (( $ret == 0 ));
+	then
+		echo "Database created and secured"
+	else
+		echo "Failed to create database : $?"
+		exit 3036
+	fi
+	echo "Here are the current databases :"
+	mysqlshow
+	echo "Here are the current users@host :"
+	mysql -e "SELECT user, host FROM mysql.user"
+	service mysql stop
 }
 
-launch()
-{
-	exec /usr/sbin/mysqld --bind-address=0.0.0.0 --port=3306
-}
-
-#main
-#exec "$@"
+main ; exec "$@"

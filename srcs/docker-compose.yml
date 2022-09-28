@@ -16,8 +16,8 @@ services:
       - MYSQL_DATABASE_PREFIX
     #image: mariadb:inception
     volumes:
-      - /home/tpouget/data/mariadb:/var/lib/mysql
-      #- mariadb_volume:/var/lib/mysql
+      - mariadb_volume:/var/lib/mysql
+      #- /home/tpouget/data/mariadb:/var/lib/mysql
     #networks:
     #  - docker_network
     #restart: on-failure
@@ -60,9 +60,9 @@ volumes:
       type: none
       device: /home/tpouget/data/wordpress
       o: bind
-  #mariadb_volume:
-  #  driver: local
-  #  driver_opts:
-  #    type: none
-  #    device: /home/tpouget/data/mariadb
-  #    o: bind
+  mariadb_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/tpouget/data/mariadb
+      o: bind
