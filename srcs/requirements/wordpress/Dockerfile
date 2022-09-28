@@ -11,6 +11,8 @@ RUN apt update && apt install -y \
 		php-mysqlnd \
 		php-getid3 \
 		php-fpm \
+		mariadb-client \
+		vim \
 && apt clean
 
 # Create the www user

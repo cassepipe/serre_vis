@@ -42,6 +42,15 @@ up: | ${HOME_PATH}/data/mariadb ${HOME_PATH}/data/wordpress
 	${DOCKER_COMPOSE_COMMAND} up --detach --pull never --build
 	$(MAKE) ps
 
+${HOME_PATH}/data/mariadb:
+	sudo mkdir -p ${HOME_PATH}/data/mariadb
+
+${HOME_PATH}/data/wordpress:
+	sudo mkdir -p ${HOME_PATH}/data/wordpress
+
+rm_directories:
+	sudo rm -rf ${HOME_PATH}/data/mariadb ${HOME_PATH}/data/wordpress
+
 clean: stop
 	sudo docker system prune -a --force
 
@@ -52,40 +61,40 @@ fclean: stop rm_directories
 re: fclean up
 
 inspect_nginx:
-	${DOCKER_COMPOSE_COMMAND} exec nginx bash
+	${DOCKER_COMPOSE_COMMAND} exec nginx /bin/bash
 
 inspect_mariadb:
-	${DOCKER_COMPOSE_COMMAND} exec mariadb bash
+	${DOCKER_COMPOSE_COMMAND} inspect mariadb
 
 inspect_wordpress:
-	${DOCKER_COMPOSE_COMMAND} exec wordpress bash
+	${DOCKER_COMPOSE_COMMAND} exec wordpress /bin/bash
 
 debug_nginx:
 	${DOCKER_COMPOSE_COMMAND} build
-	docker run --rm -it --env-file=srcs/.env --entrypoint ""  inception-nginx /bin/bash
+	${DOCKER_COMPOSE_COMMAND} run --rm -it --entrypoint ""  nginx /bin/bash
 
 debug_mariadb:
 	${DOCKER_COMPOSE_COMMAND} build
-	docker run --rm -it --env-file=srcs/.env  --entrypoint ""  inception-mariadb /bin/bash
+	${DOCKER_COMPOSE_COMMAND} run --rm -it --entrypoint "" mariadb /bin/bash
 
 debug_wordpress:
 	${DOCKER_COMPOSE_COMMAND} build
-	docker run --rm -it --env-file=srcs/.env  --entrypoint ""  inception-wordpress /bin/bash
+	${DOCKER_COMPOSE_COMMAND} run --rm -it --entrypoint "" wordpress /bin/bash
 
 run_nginx:
 	${DOCKER_COMPOSE_COMMAND} build
-	docker run --rm -it --env-file=srcs/.env -d  inception-nginx /bin/bash
+	${DOCKER_COMPOSE_COMMAND} run --rm -d nginx
 
 run_mariadb:
 	${DOCKER_COMPOSE_COMMAND} build
-	docker run --rm -it --env-file=srcs/.env -d inception-mariadb 
+	${DOCKER_COMPOSE_COMMAND} run --rm -d mariadb
 
 run_wordpress:
 	${DOCKER_COMPOSE_COMMAND} build
-	docker run --rm -it --env-file=srcs/.env -d inception-wordpress
+	${DOCKER_COMPOSE_COMMAND} run --rm -d wordpress
 
 stop_all:
-	docker stop `docker ps -a -q`
+	docker stop `docker ps -q`
 
 remove_exited:
 	docker rm `docker ps -a -q`
@@ -100,13 +109,13 @@ log_wordpress:
 	${DOCKER_COMPOSE_COMMAND} logs --follow wordpress
 
 top_nginx:
-	sudo docker top nginx
+	${DOCKER_COMPOSE_COMMAND} top nginx
 
 top_mariadb:
-	sudo docker top mariadb
+	${DOCKER_COMPOSE_COMMAND} top mariadb 
 
 top_wordpress:
-	sudo docker top wordpress
+	${DOCKER_COMPOSE_COMMAND} top wordpress
 
 ps:
 	${DOCKER_COMPOSE_COMMAND} ps
@@ -138,16 +147,6 @@ stop:
 
 restart:
 	${DOCKER_COMPOSE_COMMAND} restart
-
-${HOME_PATH}/data/mariadb:
-	sudo mkdir -p ${HOME_PATH}/data/mariadb
-
-${HOME_PATH}/data/wordpress:
-	sudo mkdir -p ${HOME_PATH}/data/wordpress
-
-
-rm_directories:
-	sudo rm -rf ${HOME_PATH}/data/mariadb ${HOME_PATH}/data/wordpress
 
 open_dockerfiles:
 	vim srcs/requirements/mariadb/Dockerfile srcs/requirements/wordpress/Dockerfile srcs/requirements/nginx/Dockerfile
