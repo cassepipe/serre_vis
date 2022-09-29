@@ -12,11 +12,6 @@ RUN mkdir -p /var/run/mysqld \
 	&& chown --recursive mysql:mysql /var/run/mysqld \
 	&& chmod 777 /var/run/mysqld 
 
-RUN useradd www
-RUN touch /var/log/php7.3-fpm.log \
-		&& chown www:www /var/log/php7.3-fpm.log \
-		&& chmod 777 /var/log/php7.3-fpm.log
-
 #Pas nécessaire normalement
 RUN mysql_install_db
 

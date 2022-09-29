@@ -21,6 +21,10 @@ RUN useradd www
 RUN mkdir -p /var/www/wordpress \
 	&& chown www:www /var/www/wordpress
 
+#RUN touch /var/log/php7.3-fpm.log \
+#        && chown www:www /var/log/php7.3-fpm.log \
+#        && chmod +x /var/log/php7.3-fpm.log
+
 # Copy php config files
 COPY ./conf/www.conf	/etc/php7.3/php-fpm.d/
 COPY ./conf/php.ini		/etc/php7.3/
