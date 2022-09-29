@@ -16,9 +16,10 @@ RUN apt update && apt install -y \
 && apt clean
 
 # Create the www user
-RUN useradd www && \
-		mkdir -p /var/www/wordpress && \
-		chown www:www /var/www/wordpress
+RUN useradd www 
+
+RUN mkdir -p /var/www/wordpress \
+	&& chown www:www /var/www/wordpress
 
 # Copy php config files
 COPY ./conf/www.conf	/etc/php7.3/php-fpm.d/
@@ -35,4 +36,6 @@ EXPOSE 9000
 
 # Install wp and run php
 ENTRYPOINT ["/wordpress_install.sh"]
-CMD ["php-fpm7.3", "--nodaemonize", "--allow-to-run-as-root"]
+#CMD ["php-fpm7.3", "--nodaemonize", "--allow-to-run-as-root"]
+#CMD ["php-fpm7.3", "--nodaemonize"]
+CMD ["su", "www", "-c", "php-fpm7.3 --nodaemonize"]
