@@ -1,85 +1,91 @@
 #! /bin/sh
 
-WORDPRESS_CONFIG_FILE=/var/www/wordpress/wp-config.php
+WORDPRESS_DATADIR=/var/www/wordpress
 
-# WP-CLI = Command line interface for WordPress
-install_wp_cli()
+remove_wordpress ()
 {
-	curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-	chmod +x wp-cli.phar
-	mv wp-cli.phar /usr/local/bin/wp
+	rm -rf ${WORDPRESS_DATADIR}
 }
 
-# Download wordpress
+install_wp_cli()
+{
+	echo "Installing the Wordpress CLI..."
+	curl --output /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+		|| return
+	chmod +x /usr/local/bin/wp 
+}
+
 download_wordpress()
 {
-	echo "Downloading WordPress"
-	wp core download --path=/var/www/wordpress --force --allow-root #--skip-content
+	echo "Downloading WordPress..."
+	su ${MYSQL_USER} -c " wp core download --path=$WORDPRESS_DATADIR --force #--skip-content"
+}
+
+test_database_access()
+{
+	echo "Testing access to wordpress database"
+	mysql --user=$MYSQL_USER --password=$MYSQL_PASSWORD --protocol=TCP --host=${MYSQL_DATABASE_HOST} $MYSQL_DATABASE -e "quit"
 }
 
 # Configuration of wp-config.php
 config_wordpress()
 {
-	echo "WordPress configuration"
-	cd /var/www/wordpress
-
-	wp config create \
+	echo "Configuring Wordpress..."
+	su ${MYSQL_USER} -c "wp config create \
+		--path=${WORDPRESS_DATADIR} \
 		--dbname=${MYSQL_DATABASE} \
 		--dbuser=${MYSQL_USER} \
 		--dbpass=${MYSQL_PASSWORD} \
-		--dbhost=${MYSQL_DATABASE_HOST} \
-		--allow-root 
-		#--dbprefix=${MYSQL_DB_PREFIX} \
-
-	#sed -i "62i define('FS_METHOD', 'direct');" wp-config.php
+		--dbhost=${MYSQL_DATABASE_HOST} 
+		"
 }
 
 # Wordpress installation
 install_wordpress()
 {
-	echo "WordPress installation"
-	cd /var/www/wordpress
-
-	wp core install \
+	echo "Installing Wordpress..."
+	su ${MYSQL_USER} - c "wp core install \
+		--path= ${WORDPRESS_DATADIR} \
 		--url=${SITE_URL} \
 		--title=${SITE_TITLE} \
 		--admin_user=${WP_ADMIN_USER} \
 		--admin_password=${WP_ADMIN_PASSWORD} \
 		--admin_email=${WP_ADMIN_EMAIL} \
-		--allow-root \
 		--skip-email
+	"
 
 	#Change permalinks structure
-	wp rewrite structure /%postname%/
+	#wp rewrite structure /%postname%/
 
 	# Install the default theme
-	wp theme install twentytwentytwo --force
+	#wp theme install twentytwentytwo --force
 }
 
 # Create the second wordpress user
 create_user()
 {
+	echo "Creating Worpress user ${WP_USER}"
 	wp user create ${WP_USER} ${WP_USER_EMAIL} --user_pass=${WP_USER_PASSWORD}
 }
 
 main()
 {
-	install_wp_cli
-	if [ -f "$WORDPRESS_CONFIG_FILE" ];
+	if [ -f "${WORDPRESS_DATADIR}/wp-config.php" ];
 	then
 		echo "WordPress is already downloaded."
 	else
 		echo "Wordpress installation ..."
-		install_wp_cli
-		download_wordpress
-		config_wordpress
-		install_wordpress
-		create_user
-		chown -R www:www /var/www/wordpress
-		wp cron event run --due-now
-		echo "The WordPress installation is completed."
+		test_database_access \
+		&& install_wp_cli \
+		&& download_wordpress \
+		&& config_wordpress \
+		&& install_wordpress \
+		&& create_user \
+		&& chown -R www:www ${WORDPRESS_DATADIR} \
+		&& wp cron event run --due-now \
+		&& echo "The WordPress installation is completed."
 	fi
 }
 
-main
-exec "$@"
+set -o vi
+#ret=main; if (( $ret == 0 )); then exec "$@"; else echo "Worpress setup failed : $ret"; fi ; return ret;
