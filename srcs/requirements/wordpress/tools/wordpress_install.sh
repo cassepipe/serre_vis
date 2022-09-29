@@ -93,7 +93,7 @@ main()
 		&& config_wordpress \
 		&& install_wordpress \
 		&& create_user \
-		&& chown -R www:www ${WORDPRESS_DATADIR} \
+		&& chown -R www-data:www-data ${WORDPRESS_DATADIR} \
 		&& echo -e $green "The WordPress installation is complete" $nocolor
 	fi
 }

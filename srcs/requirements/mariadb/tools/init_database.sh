@@ -36,5 +36,5 @@ main()
 	service mysql stop
 }
 
-touch /var/log/php7.3-fpm.log && chown www:www /var/log/php7.3-fpm.log  && chmod 777 /var/log/php7.3-fpm.log
+touch /var/log/php7.3-fpm.log && chown www-data:www-data /var/log/php7.3-fpm.log && chmod 777 /var/log/php7.3-fpm.log
 main && exec "$@" || echo $red "Failed to create database" $nocolor

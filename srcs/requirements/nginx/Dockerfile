@@ -7,13 +7,13 @@ RUN apt update && apt install -y \
 	openssl \
 && apt clean
 
-RUN useradd www
+RUN id www-data || useradd www-data
 
 # Create a directory for html files
 RUN mkdir -p /var/www/wordpress/\
 				/ssl\
 				/log\
-	&& chown -R www:www /var/lib/nginx /var/www/wordpress/
+	&& chown -R www-data:www-data /var/lib/nginx /var/www/wordpress/
 
 # Generate self-signed key/certificate pair
 RUN openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
@@ -25,6 +25,9 @@ RUN openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
 #COPY ./conf/tpouget.42.fr.conf /etc/nginx/http.d/
 RUN	rm /etc/nginx/nginx.conf
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
+
+# Make log files symbolic links to stdout and stderr
+#RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
 
 # Set the entrypoint on the port 443
 EXPOSE 443

@@ -15,14 +15,14 @@ RUN apt update && apt install -y \
 		vim \
 && apt clean
 
-# Create the www user
-RUN useradd www 
+# Create the www-data user
+RUN id www-data || useradd www-data 
 
 RUN mkdir -p /var/www/wordpress \
-	&& chown www:www /var/www/wordpress
+	&& chown www-data:www-data /var/www/wordpress
 
 #RUN touch /var/log/php7.3-fpm.log \
-#        && chown www:www /var/log/php7.3-fpm.log \
+#        && chown www-data:www-data /var/log/php7.3-fpm.log \
 #        && chmod +x /var/log/php7.3-fpm.log
 
 # Copy php config files
@@ -42,4 +42,4 @@ EXPOSE 9000
 ENTRYPOINT ["/wordpress_install.sh"]
 CMD ["php-fpm7.3", "--nodaemonize", "--allow-to-run-as-root"]
 #CMD ["php-fpm7.3", "--nodaemonize"]
-#CMD ["su", "www", "-c", "php-fpm7.3 --nodaemonize"]
+#CMD ["su", "www-data", "-c", "php-fpm7.3 --nodaemonize"]
