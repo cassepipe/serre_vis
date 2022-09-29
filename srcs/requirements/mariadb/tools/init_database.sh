@@ -1,5 +1,10 @@
 #!/bin/sh
 
+red='\e[31m'
+green='\e[32m'
+cyan='\e[36m'
+nocolor='\e[0m'
+
 set -o vi
 
 # Create the wordpress database
@@ -15,8 +20,6 @@ create_database()
 			DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';
 			FLUSH PRIVILEGES;
 			EOF
-	echo "mysql command return $?"
-	return $?
 }
 
 main()
@@ -25,19 +28,12 @@ main()
 	sleep 1
 	service mysql status
 	sleep 1
-	ret=create_database
-	if (( $ret == 0 ));
-	then
-		echo "Database created and secured"
-	else
-		echo "Failed to create database : $?"
-		exit 3036
-	fi
-	echo "Here are the current databases :"
+	create_database && echo -e $cyan "Database created and secured" $nocolor || return
+	echo -e $cyan "Here are the current databases :" $nocolor
 	mysqlshow
-	echo "Here are the current users@host :"
+	echo -e $cyan "Here are the current users@host :" $nocolor
 	mysql -e "SELECT user, host FROM mysql.user"
 	service mysql stop
 }
 
-main ; exec "$@"
+main && exec "$@" || echo $red "Failed to create database" $nocolor

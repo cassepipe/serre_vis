@@ -48,25 +48,28 @@ ${HOME_PATH}/data/mariadb:
 ${HOME_PATH}/data/wordpress:
 	sudo mkdir -p ${HOME_PATH}/data/wordpress
 
-rm_directories:
+rm_database:
 	sudo rm -rf ${HOME_PATH}/data/mariadb/*	 ${HOME_PATH}/data/wordpress/*
+
+rm_wordpress:
+	sudo rm -rf ${HOME_PATH}/data/wordpress/*
 
 clean: stop
 	sudo docker system prune -a --force
 
-fclean: stop rm_directories
+fclean: stop rm_database rm_wordpress
 	sudo docker system prune -a --force --volumes
 	sudo docker volume rm -f inception_mariadb_volume inception_wordpress_volume
 
 re: fclean up
 
-inspect_nginx:
+exec_nginx:
 	${DOCKER_COMPOSE_COMMAND} exec nginx /bin/bash
 
-inspect_mariadb:
-	${DOCKER_COMPOSE_COMMAND} inspect mariadb
+exec_mariadb:
+	${DOCKER_COMPOSE_COMMAND} exec mariadb /bin/bash
 
-inspect_wordpress:
+exec_wordpress:
 	${DOCKER_COMPOSE_COMMAND} exec wordpress /bin/bash
 
 debug_nginx:
@@ -119,6 +122,7 @@ top_wordpress:
 
 ps:
 	${DOCKER_COMPOSE_COMMAND} ps
+	docker ps
 
 list:
 	@printf "CONTAINERS LIST :\n"

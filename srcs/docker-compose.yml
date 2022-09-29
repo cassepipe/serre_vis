@@ -18,8 +18,8 @@ services:
     volumes:
       - mariadb_volume:/var/lib/mysql
       #- /home/tpouget/data/mariadb:/var/lib/mysql
-    #networks:
-    #  - docker_network
+    networks:
+      - docker_network
     #restart: on-failure
 
   wordpress:
@@ -31,8 +31,8 @@ services:
     env_file: .env
     depends_on:
       - mariadb
-    #networks:
-    #  - docker_network
+    networks:
+      - docker_network
     #restart: on-failure
 
   nginx:
@@ -45,13 +45,13 @@ services:
       - wordpress_volume:/var/www/wordpress
     depends_on:
       - wordpress
-    #networks:
-    #  - docker_network
+    networks:
+      - docker_network
     #restart: on-failure
 
-#networks:
-#  docker_network:
-#    driver: bridge
+networks:
+  docker_network:
+    driver: bridge
 
 volumes:
   wordpress_volume:

@@ -35,4 +35,4 @@ EXPOSE 9000
 
 # Install wp and run php
 ENTRYPOINT ["/wordpress_install.sh"]
-CMD ["php-fpm7.3", "-F"]
+CMD ["php-fpm7.3", "--nodaemonize", "--allow-to-run-as-root"]

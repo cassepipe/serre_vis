@@ -1,5 +1,10 @@
 #! /bin/sh
 
+red='\e[31m'
+green='\e[32m'
+blue='\e[36m'
+nocolor='\e[0m'
+
 WORDPRESS_DATADIR=/var/www/wordpress
 
 remove_wordpress ()
@@ -9,7 +14,7 @@ remove_wordpress ()
 
 install_wp_cli()
 {
-	echo "Installing the Wordpress CLI..."
+	echo -e $blue "Installing the Wordpress CLI..." $nocolor
 	curl --output /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
 		|| return
 	chmod +x /usr/local/bin/wp 
@@ -17,42 +22,45 @@ install_wp_cli()
 
 download_wordpress()
 {
-	echo "Downloading WordPress..."
-	su ${MYSQL_USER} -c " wp core download --path=$WORDPRESS_DATADIR --force #--skip-content"
+	echo -e $blue "Downloading WordPress..." $nocolor
+	wp core download --path=$WORDPRESS_DATADIR --force --allow-root #--skip-content"
 }
 
 test_database_access()
 {
-	echo "Testing access to wordpress database"
-	mysql --user=$MYSQL_USER --password=$MYSQL_PASSWORD --protocol=TCP --host=${MYSQL_DATABASE_HOST} $MYSQL_DATABASE -e "quit"
+	echo -e $blue "Testing access to wordpress database" $nocolor
+	mysql $MYSQL_DATABASE -e "quit" \
+		--user=$MYSQL_USER \
+		--password=$MYSQL_PASSWORD \
+		--protocol=TCP \
+		--host=${MYSQL_DATABASE_HOST}
 }
 
-# Configuration of wp-config.php
 config_wordpress()
 {
-	echo "Configuring Wordpress..."
-	su ${MYSQL_USER} -c "wp config create \
+	echo -e $blue "Configuring Wordpress..." $nocolor
+	wp config create \
+		--allow-root \
 		--path=${WORDPRESS_DATADIR} \
 		--dbname=${MYSQL_DATABASE} \
 		--dbuser=${MYSQL_USER} \
 		--dbpass=${MYSQL_PASSWORD} \
 		--dbhost=${MYSQL_DATABASE_HOST} 
-		"
 }
 
-# Wordpress installation
+# Sets up our url and admin user
 install_wordpress()
 {
-	echo "Installing Wordpress..."
-	su ${MYSQL_USER} - c "wp core install \
-		--path= ${WORDPRESS_DATADIR} \
+	echo -e $blue "Installing Wordpress..." $nocolor
+	wp core install \
+		--allow-root \
+		--path=${WORDPRESS_DATADIR} \
 		--url=${SITE_URL} \
 		--title=${SITE_TITLE} \
 		--admin_user=${WP_ADMIN_USER} \
 		--admin_password=${WP_ADMIN_PASSWORD} \
 		--admin_email=${WP_ADMIN_EMAIL} \
 		--skip-email
-	"
 
 	#Change permalinks structure
 	#wp rewrite structure /%postname%/
@@ -61,20 +69,23 @@ install_wordpress()
 	#wp theme install twentytwentytwo --force
 }
 
-# Create the second wordpress user
+# Create the non-admin wordpress user
 create_user()
 {
-	echo "Creating Worpress user ${WP_USER}"
-	wp user create ${WP_USER} ${WP_USER_EMAIL} --user_pass=${WP_USER_PASSWORD}
+	echo -e $blue "Creating Wordpress user : ${WP_USER}" $nocolor
+	wp user create ${WP_USER} ${WP_USER_EMAIL} \
+		--allow-root \
+		--path=${WORDPRESS_DATADIR} \
+		--user_pass=${WP_USER_PASSWORD}
 }
 
 main()
 {
 	if [ -f "${WORDPRESS_DATADIR}/wp-config.php" ];
 	then
-		echo "WordPress is already downloaded."
+		echo -e $green "WordPress is already downloaded" $nocolor
 	else
-		echo "Wordpress installation ..."
+		echo -e $blue "Wordpress installation ..." $nocolor
 		test_database_access \
 		&& install_wp_cli \
 		&& download_wordpress \
@@ -82,10 +93,10 @@ main()
 		&& install_wordpress \
 		&& create_user \
 		&& chown -R www:www ${WORDPRESS_DATADIR} \
-		&& wp cron event run --due-now \
-		&& echo "The WordPress installation is completed."
+		&& echo -e $green "The WordPress installation is complete" $nocolor
 	fi
 }
 
 set -o vi
-#ret=main; if (( $ret == 0 )); then exec "$@"; else echo "Worpress setup failed : $ret"; fi ; return ret;
+#ret=main; if (( $ret == 0 )); then exec "$@"; else echo -e $red "Wordpress setup failed : $ret" $nocolor; fi ; return ret;
+if (( main )); then exec "$@"; fi
