@@ -1,0 +1,27 @@
+#32 [inception-mariadb 7/7] RUN	RED='\E[31M' 
+green='\e[32m' 
+cyan='\e[36m' 
+nocolor='\e[0m' 
+service mysql start || return 1
+sleep 5
+mysql -uroot -e "CREATE DATABASE IF NOT EXISTS wordpress;" || return 2 
+mysql -uroot -e "CREATE USER IF NOT EXISTS mariadb_db;" || return 3 
+mysql -uroot -e "GRANT ALL PRIVILEGES ON wordpress.* TO "mariadb_db"@"%" IDENTIFIED BY 5nC4H9N97nWQKQkJtuAqvMRizZKnOyG;" || return 4 
+mysql -uroot -e "DELETE FROM mysql.user WHERE User='';" || return 5 
+mysql -uroot -e "DROP DATABASE IF EXISTS test;" || return 6 
+mysql -uroot -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';" || return 7 
+mysql -uroot -e "FLUSH PRIVILEGES;" || return 8 
+echo -e $cyan "Database created and secured" $nocolor || return 9 
+echo -e $cyan "Here are the current databases :" $nocolor || return 10 
+mysqlshow || return  
+echo -e $cyan "Here are the current users@host :" $nocolor || return 12 
+mysql -e "SELECT user, host FROM mysql.user" || return 13 
+service mysql stop
+#32 0.356 Starting MariaDB database server: mysqld ..
+#32 7.447 ERROR 1064 (42000) at line 1: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '5nC4H9N97nWQKQkJtuAqvMRizZKnOyG' at line 1
+#32 ERROR: executor failed running [/bin/sh -c red='\e[31m' ; 	green='\e[32m' ; 	cyan='\e[36m' ; 	nocolor='\e[0m' ; 	service mysql start || return 1; 	sleep 5; 	mysql -uroot -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};" || return 2 ; 	mysql -uroot -e "CREATE USER IF NOT EXISTS $MYSQL_USER;" || return 3 ; 	mysql -uroot -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO \"$MYSQL_USER\"@\"%\" IDENTIFIED BY $MYSQL_PASSWORD;" || return 4 ; 	mysql -uroot -e "DELETE FROM mysql.user WHERE User='';" || return 5 ; 	mysql -uroot -e "DROP DATABASE IF EXISTS test;" || return 6 ; 	mysql -uroot -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';" || return 7 ; 	mysql -uroot -e "FLUSH PRIVILEGES;" || return 8 ; 	echo -e $cyan "Database created and secured" $nocolor || return 9 ; 	echo -e $cyan "Here are the current databases :" $nocolor || return 10 ; 	mysqlshow || return  ; 	echo -e $cyan "Here are the current users@host :" $nocolor || return 12 ; 	mysql -e "SELECT user, host FROM mysql.user" || return 13 ; 	service mysql stop]: exit code: 4
+------
+ > [inception-mariadb 7/7] RUN	RED='\E[31M' ; 	green='\e[32m' ; 	cyan='\e[36m' ; 	nocolor='\e[0m' ; 	service mysql start || return 1; 	sleep 5; 	mysql -uroot -e "CREATE DATABASE IF NOT EXISTS wordpress;" || return 2 ; 	mysql -uroot -e "CREATE USER IF NOT EXISTS mariadb_db;" || return 3 ; 	mysql -uroot -e "GRANT ALL PRIVILEGES ON wordpress.* TO "mariadb_db"@"%" IDENTIFIED BY 5nC4H9N97nWQKQkJtuAqvMRizZKnOyG;" || return 4 ; 	mysql -uroot -e "DELETE FROM mysql.user WHERE User='';" || return 5 ; 	mysql -uroot -e "DROP DATABASE IF EXISTS test;" || return 6 ; 	mysql -uroot -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';" || return 7 ; 	mysql -uroot -e "FLUSH PRIVILEGES;" || return 8 ; 	echo -e $cyan "Database created and secured" $nocolor || return 9 ; 	echo -e $cyan "Here are the current databases :" $nocolor || return 10 ; 	mysqlshow || return  ; 	echo -e $cyan "Here are the current users@host :" $nocolor || return 12 ; 	mysql -e "SELECT user, host FROM mysql.user" || return 13 ; 	service mysql stop:
+.
+#32 7.447 ERROR 1064 (42000) at line 1: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '5nC4H9N97nWQKQkJtuAqvMRizZKnOyG' at line 1
+------

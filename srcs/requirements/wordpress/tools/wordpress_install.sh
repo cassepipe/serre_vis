@@ -86,6 +86,7 @@ main()
 		echo -e $green "WordPress is already downloaded" $nocolor
 	else
 		echo -e $blue "Wordpress installation ..." $nocolor
+		sleep 5
 		test_database_access \
 		&& install_wp_cli \
 		&& download_wordpress \

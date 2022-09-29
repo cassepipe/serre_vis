@@ -13,7 +13,6 @@ services:
       - MYSQL_USER
       - MYSQL_PASSWORD
       - MYSQL_DATABASE
-      - MYSQL_DATABASE_PREFIX
     #image: mariadb:inception
     volumes:
       - mariadb_volume:/var/lib/mysql

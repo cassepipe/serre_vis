@@ -48,6 +48,9 @@ ${HOME_PATH}/data/mariadb:
 ${HOME_PATH}/data/wordpress:
 	sudo mkdir -p ${HOME_PATH}/data/wordpress
 
+log_build:
+	${DOCKER_COMPOSE_COMMAND} up --build > build_log.txt
+
 rm_database:
 	sudo rm -rf ${HOME_PATH}/data/mariadb/*	 ${HOME_PATH}/data/wordpress/*
 
