@@ -23,10 +23,6 @@ RUN id www-data || useradd www-data
 RUN mkdir -p /var/www/wordpress \
 	&& chown www-data:www-data /var/www/wordpress
 
-#RUN touch /var/log/php7.3-fpm.log \
-#        && chown www-data:www-data /var/log/php7.3-fpm.log \
-#        && chmod +x /var/log/php7.3-fpm.log
-
 # Copy php config files
 COPY ./conf/www.conf	/etc/php/7.3/fpm/pool.d/
 COPY ./conf/php.ini		/etc/php/7.3/fpm
