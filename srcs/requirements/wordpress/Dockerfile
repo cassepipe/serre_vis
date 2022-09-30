@@ -1,4 +1,6 @@
 # ./tools/wordpress_install.sh	/
+# ./conf/www.conf
+# ./conf/php.ini
 
 FROM debian:buster
 
@@ -26,8 +28,8 @@ RUN mkdir -p /var/www/wordpress \
 #        && chmod +x /var/log/php7.3-fpm.log
 
 # Copy php config files
-COPY ./conf/www.conf	/etc/php7.3/php-fpm.d/
-COPY ./conf/php.ini		/etc/php7.3/
+COPY ./conf/www.conf	/etc/php/7.3/fpm/pool.d/
+COPY ./conf/php.ini		/etc/php/7.3/fpm
 
 # Copy the wordpress installation script
 COPY ./tools/wordpress_install.sh	/
@@ -38,6 +40,7 @@ RUN mkdir /run/php
 # Expose the port 9000
 EXPOSE 9000
 
+RUN ln -sf /dev/stdout /var/log/php7.3-fpm.log  && ln -sf /dev/stderr /var/log/php7.3-fpm.log 
 # Install wp and run php
 ENTRYPOINT ["/wordpress_install.sh"]
 CMD ["php-fpm7.3", "--nodaemonize", "--allow-to-run-as-root"]
