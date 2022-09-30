@@ -20,4 +20,4 @@ EXPOSE 3306
 
 # Launch the script
 ENTRYPOINT ["./init_database.sh"]
-CMD [ "mysqld", "--bind-address=0.0.0.0", "--port=3306"]
+CMD [ "mysqld", "--bind-address=0.0.0.0"]
