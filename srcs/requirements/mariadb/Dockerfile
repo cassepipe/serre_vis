@@ -7,11 +7,6 @@ RUN apt update && apt install -y \
 	vim \
 && apt clean
 
-# Je vois pas pourquoi c'est nécessaire mais bon
-RUN mkdir -p /var/run/mysqld \
-	&& chown --recursive mysql:mysql /var/run/mysqld \
-	&& chmod 777 /var/run/mysqld 
-
 COPY ./tools/init_database.sh	/
 RUN chmod +x ./init_database.sh
 
