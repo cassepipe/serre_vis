@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 red='\e[31m'
 green='\e[32m'
@@ -8,6 +8,7 @@ nocolor='\e[0m'
 set -o vi
 
 # Create the wordpress database
+# Using heredoc because sql don't handle variable substitution
 create_database()
 {
 	mysql <<-EOF
@@ -15,7 +16,7 @@ create_database()
 			CREATE USER IF NOT EXISTS $MYSQL_USER;
 			GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO "$MYSQL_USER"@"%" IDENTIFIED BY "$MYSQL_PASSWORD";
 			DELETE FROM mysql.user WHERE User='';
-			--DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+			DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 			DROP DATABASE IF EXISTS test;
 			DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';
 			FLUSH PRIVILEGES;
@@ -26,8 +27,6 @@ main()
 {
 	service mysql start
 	sleep 1
-	service mysql status
-	sleep 1
 	create_database && echo -e $cyan "Database created and secured" $nocolor || return
 	echo -e $cyan "Here are the current databases :" $nocolor
 	mysqlshow
@@ -36,5 +35,4 @@ main()
 	service mysql stop
 }
 
-touch /var/log/php7.3-fpm.log && chown www-data:www-data /var/log/php7.3-fpm.log && chmod 777 /var/log/php7.3-fpm.log
-main && exec "$@" || echo $red "Failed to create database" $nocolor
+main && exec "$@" || echo $red "Failed to create database or to exec entrypoint command" $nocolor

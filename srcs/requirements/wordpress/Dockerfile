@@ -3,6 +3,7 @@
 
 FROM debian:buster
 
+# Yes I know I should be using apt-get but it's too long to type
 RUN apt update && apt install -y \
 		curl \
 		procps \
@@ -14,7 +15,7 @@ RUN apt update && apt install -y \
 		php-fpm \
 		mariadb-client \
 		vim \
-&& apt clean
+&& apt clean #Doc recommends using `rm -rf /Ican'tremember`
 
 # Create the www-data user
 RUN id www-data || useradd www-data 
