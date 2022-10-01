@@ -20,9 +20,6 @@ RUN apt update && apt install -y \
 # Create the www-data user
 RUN id www-data || useradd www-data 
 
-#RUN mkdir -p /var/www/wordpress \
-#    && chown www-data:www-data /var/www/wordpress
-
 # Copy php pool/user specific config file
 COPY ./conf/www.conf	/etc/php/7.3/fpm/pool.d/
 
@@ -32,6 +29,7 @@ RUN chmod +x /wordpress_install.sh
 
 # Because that's where the pid file of php-fpm lives by default
 # and it does not exist. Global setting, could be changed in /etc/php/7.3/fpm/php-fpm.conf
+# `service start php-fpm` would also create it
 RUN mkdir /run/php
 
 # Expose the port 9000
@@ -45,4 +43,3 @@ RUN ln -sf /dev/stderr /var/log/php7.3-fpm.log
 # Install wp and run php
 ENTRYPOINT ["/wordpress_install.sh"]
 CMD ["php-fpm7.3", "--nodaemonize", "--allow-to-run-as-root"]
-#CMD ["su", "www-data", "-c", "php-fpm7.3 --nodaemonize"]

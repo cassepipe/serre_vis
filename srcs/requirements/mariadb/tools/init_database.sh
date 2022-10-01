@@ -11,6 +11,7 @@ set -o vi
 # Using heredoc because sql don't handle variable substitution
 create_database()
 {
+	echo -e $cyan "Creating wordpress database and securing install..." $nocolor
 	mysql <<-EOF
 			CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
 			CREATE USER IF NOT EXISTS $MYSQL_USER;

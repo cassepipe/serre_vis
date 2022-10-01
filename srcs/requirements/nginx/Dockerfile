@@ -11,8 +11,6 @@ RUN id www-data || useradd www-data
 
 # Create a directory for html files
 RUN mkdir -p /var/www/wordpress/\
-				/ssl\
-				/log\
 	&& chown -R www-data:www-data /var/lib/nginx /var/www/wordpress/
 
 # Generate self-signed key/certificate pair

@@ -99,5 +99,4 @@ main()
 }
 
 set -o vi
-#ret=main; if (( $ret == 0 )); then exec "$@"; else echo -e $red "Wordpress setup failed : $ret" $nocolor; fi ; return ret;
 if (( main )); then exec "$@"; fi
