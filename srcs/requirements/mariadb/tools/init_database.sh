@@ -36,4 +36,4 @@ main()
 	service mysql stop
 }
 
-main && exec "$@" || echo $red "Failed to create database or to exec entrypoint command" $nocolor
+main && exec "$@" || echo -e $red "Failed to create database or to exec entrypoint command" $nocolor
