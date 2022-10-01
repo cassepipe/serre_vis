@@ -9,10 +9,6 @@ RUN apt update && apt install -y \
 
 RUN id www-data || useradd www-data
 
-# Create a directory for html files
-RUN mkdir -p /var/www/wordpress/\
-	&& chown -R www-data:www-data /var/www/wordpress/
-
 # Generate self-signed key/certificate pair
 # -x509 generates certificates instead of certificate request
 # -nodes --> No DES, deprecated on newer versions for -noenc (No encrytion)
