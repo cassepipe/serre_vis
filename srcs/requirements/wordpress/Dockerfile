@@ -32,7 +32,6 @@ RUN chmod +x /wordpress_install.sh
 # `service start php-fpm` would also create it
 RUN mkdir /run/php
 
-# Expose the port 9000
 EXPOSE 9000
 
 # Redirect logs to stdout and stderr
