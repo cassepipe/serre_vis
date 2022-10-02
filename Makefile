@@ -82,10 +82,11 @@ remove_all_containers:	stop_all
 
 # Removes persistent data
 fclean: stop rm_database rm_wordpress
-	sudo docker system prune -a --force --volumes
-	-sudo docker volume rm -f `sudo docker volume ls -q`
+		sudo docker system prune -a --force --volumes
+		-sudo docker volume rm -f `sudo docker volume ls -q`
 
-re: fclean up
+re:		fclean
+		$(MAKE)
 
 # ** DEBUGGING **
 

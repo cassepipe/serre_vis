@@ -5,106 +5,104 @@ green='\e[32m'
 blue='\e[36m'
 nocolor='\e[0m'
 
+WP_PATH=/usr/local/bin/wp
 WORDPRESS_DATADIR=/var/www/wordpress
+WP="$WP_PATH --path=$WORDPRESS_DATADIR --allow-root"
 
 install_wp_cli()
 {
 	echo -e $blue "Installing the Wordpress CLI..." $nocolor
-	curl --output /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+	curl --output $WP_PATH https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
 		|| return
-	chmod +x /usr/local/bin/wp 
+	chmod +x $WP_PATH 
 }
 
 download_wordpress()
 {
 	echo -e $blue "Downloading WordPress..." $nocolor
-	wp core download --path=$WORDPRESS_DATADIR --force --allow-root #--skip-content"
+	$WP core download --force
 }
 
-test_database_access()
+wait_for_database()
 {
-	echo -e $blue "Testing access to wordpress database" $nocolor
-	mysql $MYSQL_DATABASE -e "quit" \
-		--user=$MYSQL_USER \
-		--password=$MYSQL_PASSWORD \
-		--protocol=TCP \
-		--host=mariadb
+	echo -e $blue "Testing access to wordpress database..." $nocolor
+	while ! mysql $MYSQL_DATABASE -e "quit"  --user=$MYSQL_USER  --password=$MYSQL_PASSWORD  --protocol=TCP  --host=mariadb ;
+		do
+			sleep 2
+		done
 }
 
-config_wordpress()
+config_wordpress_database_access()
 {
-	echo -e $blue "Configuring Wordpress..." $nocolor
-	wp config create \
-		--allow-root \
-		--path=${WORDPRESS_DATADIR} \
+	echo -e $blue "Configuring wordpress database access..." $nocolor
+	$WP config create \
 		--dbname=${MYSQL_DATABASE} \
 		--dbuser=${MYSQL_USER} \
 		--dbpass=${MYSQL_PASSWORD} \
 		--dbhost=mariadb \
-		|| return
-
-	echo -e $blue "Configuring Wordpress to work with redis..." $nocolor
-	wp plugin install redis \
-		--allow-root 
-	wp config set WP_REDIS_HOST redis \
-		--allow-root \
-		--path=${WORDPRESS_DATADIR} \
-		;
-	wp config set WP_CACHE true \
-		--raw \
-		--allow-root \
-		--path=${WORDPRESS_DATADIR} \
-		;
-	wp config set WP_CACHE_KEY_SALT $SITE_URL \
-		--allow-root \
-		--path=${WORDPRESS_DATADIR} \
 		;
 }
 
-# Sets up our url and admin user
-install_wordpress()
+config_redis_cache()
 {
-	echo -e $blue "Installing Wordpress..." $nocolor
-	wp core install \
-		--allow-root \
-		--path=${WORDPRESS_DATADIR} \
+	echo -e $blue "Configuring Wordpress to work with redis..." $nocolor
+	$WP config set WP_REDIS_HOST redis
+	$WP config set WP_CACHE true --raw
+	$WP config set WP_CACHE_KEY_SALT $SITE_URL
+	$WP plugin install redis;
+}
+
+# Sets up our url and admin user
+install_website()
+{
+	echo -e $blue "Installing our website..." $nocolor
+	$WP core install \
 		--url=${SITE_URL} \
 		--title=${SITE_TITLE} \
 		--admin_user=${WP_ADMIN_USER} \
 		--admin_password=${WP_ADMIN_PASSWORD} \
 		--admin_email=${WP_ADMIN_EMAIL} \
-		--skip-email
+		--skip-email \
+		;
 
 	#Change permalinks structure
-	#wp rewrite structure /%postname%/
+	#$WP rewrite structure /%postname%/
 
 	# Install the default theme
-	#wp theme install twentytwentytwo --force
+	#$WP theme install twentytwentytwo --force
 }
 
 # Create the non-admin wordpress user
 create_user()
 {
 	echo -e $blue "Creating Wordpress user : ${WP_USER}" $nocolor
-	wp user create ${WP_USER} ${WP_USER_EMAIL} \
-		--allow-root \
-		--path=${WORDPRESS_DATADIR} \
-		--user_pass=${WP_USER_PASSWORD}
+	$WP user create ${WP_USER} ${WP_USER_EMAIL} \
+		--user_pass=${WP_USER_PASSWORD} \
+		;
 }
 
 main()
 {
+	if [[ -f $WP_PATH ]] 
+	then
+		echo -e $green "The Worpress CLI is already installed" $nocolor
+	else
+		install_wp_cli || return
+	fi
+	#if [[ -d $WORDPRESS_DATADIR ]] 
+	#then
+	#    echo -e $green "The WordPress directory is already downloaded" $nocolor
+	#else
+		download_wordpress || return
+	#fi
 	if [[ -f "${WORDPRESS_DATADIR}/wp-config.php" ]]
 	then
-		echo -e $green "WordPress is already downloaded" $nocolor
+		echo -e $green "WordPress is already configured" $nocolor
 	else
 		echo -e $blue "Wordpress installation ..." $nocolor
-		sleep 5
-		test_database_access \
-		&& install_wp_cli \
-		&& download_wordpress \
-		&& config_wordpress \
-		&& install_wordpress \
+		wait_for_database \
+		&& config_wordpress_database_access \
+		&& install_website \
 		&& create_user \
 		&& chown -R www-data:www-data ${WORDPRESS_DATADIR} \
 		&& echo -e $green "The WordPress installation is complete" $nocolor
