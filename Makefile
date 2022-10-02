@@ -111,6 +111,10 @@ debug_wordpress:
 	${DOCKER_COMPOSE_COMMAND} build
 	${DOCKER_COMPOSE_COMMAND} run --rm -it --entrypoint "" wordpress /bin/bash
 
+debug_redis:
+	${DOCKER_COMPOSE_COMMAND} build
+	${DOCKER_COMPOSE_COMMAND} run --rm -it --entrypoint "" redis /bin/bash
+
 # Run services individually
 
 run_nginx:

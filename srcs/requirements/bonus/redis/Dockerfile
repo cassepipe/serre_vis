@@ -12,8 +12,4 @@ Run apt update && apt install -y \
 EXPOSE 6379
 
 ENTRYPOINT ["redis-server"]
-CMD [ \
-	"--maxmemory", "64mb", \
-	"--maxmemory-policy", "allkeys-lru", \
-	"--protected-mode", "no", \
-	]
+CMD [ "--maxmemory", "64mb",  "--maxmemory-policy", "allkeys-lru",  "--protected-mode", "no"  ]
