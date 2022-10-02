@@ -28,7 +28,7 @@ test_database_access()
 		--user=$MYSQL_USER \
 		--password=$MYSQL_PASSWORD \
 		--protocol=TCP \
-		--host=${MYSQL_DATABASE_HOST}
+		--host=mariadb
 }
 
 config_wordpress()
@@ -40,9 +40,25 @@ config_wordpress()
 		--dbname=${MYSQL_DATABASE} \
 		--dbuser=${MYSQL_USER} \
 		--dbpass=${MYSQL_PASSWORD} \
-		--dbhost=${MYSQL_DATABASE_HOST} 
+		--dbhost=mariadb \
+		|| return
 
-
+	echo -e $blue "Configuring Wordpress to work with redis..." $nocolor
+	wp plugin install redis \
+		--allow-root 
+	wp config set WP_REDIS_HOST redis \
+		--allow-root \
+		--path=${WORDPRESS_DATADIR} \
+		;
+	wp config set WP_CACHE true \
+		--raw \
+		--allow-root \
+		--path=${WORDPRESS_DATADIR} \
+		;
+	wp config set WP_CACHE_KEY_SALT $SITE_URL \
+		--allow-root \
+		--path=${WORDPRESS_DATADIR} \
+		;
 }
 
 # Sets up our url and admin user

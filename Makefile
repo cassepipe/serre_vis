@@ -58,6 +58,9 @@ stop:
 restart:
 	${DOCKER_COMPOSE_COMMAND} restart
 
+logs:
+	${DOCKER_COMPOSE_COMMAND} logs -f
+
 # Cleanup 
 rm_database:
 	sudo rm -rf ${HOME}/data/mariadb/
