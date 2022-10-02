@@ -9,15 +9,11 @@ services:
     build: requirements/mariadb
     volumes:
       - mariadb_volume:/var/lib/mysql
-      #- /home/tpouget/data/mariadb:/var/lib/mysql
     networks:
       - docker_network
-    #restart: on-failure
 
   wordpress:
-    #container_name: wordpress
     build: requirements/wordpress
-    #image: wordpress:inception
     volumes:
       - wordpress_volume:/var/www/wordpress
     env_file: .env
@@ -25,12 +21,10 @@ services:
       - mariadb
     networks:
       - docker_network
-    #restart: on-failure
 
   nginx:
-    #container_name: nginx
     build: requirements/nginx
-    #image: nginx:inception
+    # Only service to expose a port to the outside
     ports:
       - "443:443"
     volumes:
@@ -45,15 +39,14 @@ networks:
   docker_network:
     driver: bridge
 
+# We are using named bind mounts
 volumes:
   wordpress_volume:
-    driver: local
     driver_opts:
       type: none
       device: /home/tpouget/data/wordpress
       o: bind
   mariadb_volume:
-    driver: local
     driver_opts:
       type: none
       device: /home/tpouget/data/mariadb
