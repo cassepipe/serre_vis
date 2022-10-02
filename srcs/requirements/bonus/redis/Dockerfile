@@ -1,6 +1,6 @@
 FROM debian:buster
 
-Run apt update && apt install \
+Run apt update && apt install -y \
 	redis \
 	php-redis \
 && apt clean

@@ -7,11 +7,6 @@ nocolor='\e[0m'
 
 WORDPRESS_DATADIR=/var/www/wordpress
 
-remove_wordpress ()
-{
-	rm -rf ${WORDPRESS_DATADIR}
-}
-
 install_wp_cli()
 {
 	echo -e $blue "Installing the Wordpress CLI..." $nocolor
@@ -46,6 +41,8 @@ config_wordpress()
 		--dbuser=${MYSQL_USER} \
 		--dbpass=${MYSQL_PASSWORD} \
 		--dbhost=${MYSQL_DATABASE_HOST} 
+
+
 }
 
 # Sets up our url and admin user
@@ -81,7 +78,7 @@ create_user()
 
 main()
 {
-	if [ -f "${WORDPRESS_DATADIR}/wp-config.php" ];
+	if [[ -f "${WORDPRESS_DATADIR}/wp-config.php" ]]
 	then
 		echo -e $green "WordPress is already downloaded" $nocolor
 	else

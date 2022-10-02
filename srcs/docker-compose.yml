@@ -4,7 +4,6 @@
 services:
 
   mariadb:
-    #container_name: mariadb
     env_file: .env
     build: requirements/mariadb
     volumes:
@@ -34,12 +33,19 @@ services:
     networks:
       - docker_network
     #restart: on-failure
+    
+  redis:
+    build: requirements/bonus/redis
+    # Only service to expose a port to the outside
+    networks:
+      - docker_network
+    #restart: on-failure
 
 networks:
   docker_network:
     driver: bridge
 
-# We are using named bind mounts
+# We are using "named" bind mounts
 volumes:
   wordpress_volume:
     driver_opts:

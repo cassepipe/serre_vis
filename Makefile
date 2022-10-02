@@ -69,18 +69,18 @@ clean: stop remove_exited_containers
 	sudo docker system prune -a --force
 
 stop_all:
-	docker stop `docker ps -q`
+	-docker stop `docker ps -q`
 
 remove_exited_containers:
-	docker rm `docker ps -a -q -f status=exited`
+	-docker rm `docker ps -a -q -f status=exited`
 
 remove_all_containers:	stop_all
-	docker rm `docker ps -a -q`
+	-docker rm `docker ps -a -q`
 
 # Removes persistent data
 fclean: stop rm_database rm_wordpress
 	sudo docker system prune -a --force --volumes
-	sudo docker volume rm -f `sudo docker volumes ls -q`
+	-sudo docker volume rm -f `sudo docker volume ls -q`
 
 re: fclean up
 
