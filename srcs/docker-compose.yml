@@ -6,14 +6,7 @@ services:
   mariadb:
     #container_name: mariadb
     env_file: .env
-    build: 
-      context : requirements/mariadb
-      args:
-      - MYSQL_DATABASE_HOST
-      - MYSQL_USER
-      - MYSQL_PASSWORD
-      - MYSQL_DATABASE
-    #image: mariadb:inception
+    build: requirements/mariadb
     volumes:
       - mariadb_volume:/var/lib/mysql
       #- /home/tpouget/data/mariadb:/var/lib/mysql

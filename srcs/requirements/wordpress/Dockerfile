@@ -3,7 +3,7 @@
 
 FROM debian:buster
 
-# Yes I know I should be using apt-get but it's too long to type
+# Installing dependancies listed by the wordpress package on Debian
 RUN apt update && apt install -y \
 		curl \
 		procps \
