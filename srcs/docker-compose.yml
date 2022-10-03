@@ -4,38 +4,40 @@
 services:
 
   mariadb:
-    env_file: .env
     build: requirements/mariadb
-    volumes:
-      - mariadb_volume:/var/lib/mysql
+    env_file: .env
     networks:
       - docker_network
+    volumes:
+      - mariadb_volume:/var/lib/mysql
     #restart: on-failure
 
   wordpress:
     build: requirements/wordpress
-    volumes:
-      - wordpress_volume:/var/www/wordpress
-    env_file: .env
     depends_on:
       - mariadb
-    networks:
-      - docker_network
+    depends_on:
+      - mariadb
+    env_file: .env
     environment:
       - BONUS=${BONUS:-no}
+    networks:
+      - docker_network
+    volumes:
+      - wordpress_volume:/var/www/wordpress
     #restart: on-failure
 
   nginx:
     build: requirements/nginx
     # Only service to expose a port to the outside
-    ports:
-      - "443:443"
-    volumes:
-      - wordpress_volume:/var/www/wordpress
     depends_on:
       - wordpress
     networks:
       - docker_network
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_volume:/var/www/wordpress
     #restart: on-failure
     
   redis:
@@ -46,7 +48,22 @@ services:
     profiles:
       - bonus
     #restart: on-failure
-
+    
+  #ftp:
+  #  build: requirements/bonus/ftp
+  #  env_file: .env
+  #  depends_on:
+  #    - wordpress
+  #  volumes:
+  #    - wordpress_volume:/var/www/wordpress
+  #  networks:
+  #    - docker_network
+  #  ports:
+  #    - "21:21"
+  #  profiles:
+  #    - bonus
+  #  #restart: on-failure
+    
 networks:
   docker_network:
     driver: bridge

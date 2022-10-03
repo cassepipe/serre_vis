@@ -81,13 +81,13 @@ logs:
 
 # Cleanup 
 rm_database:
-	rm -rf ${HOME}/data/mariadb/*
+	sudo rm -rf ${HOME}/data/mariadb/*
 
 rm_wordpress:
-	rm -rf ${HOME}/data/wordpress/*
+	sudo rm -rf ${HOME}/data/wordpress/*
 
 clean: stop remove_exited_containers
-	sudo docker system prune -a --force
+	docker system prune -a --force
 
 stop_all:
 	-docker stop `docker ps -q`
@@ -190,6 +190,6 @@ list_network:
 	docker network ls
 
 open_dockerfiles:
-	vim srcs/requirements/mariadb/Dockerfile srcs/requirements/wordpress/Dockerfile srcs/requirements/nginx/Dockerfile srcs/requirements/bonus/redis/Dockerfile
+	vim srcs/requirements/mariadb/Dockerfile srcs/requirements/wordpress/Dockerfile srcs/requirements/nginx/Dockerfile srcs/requirements/bonus/redis/Dockerfile srcs/requirements/bonus/ftp/Dockerfile
 open_wp_script:
 	vim  srcs/requirements/wordpress/tools/wordpress_install.sh 

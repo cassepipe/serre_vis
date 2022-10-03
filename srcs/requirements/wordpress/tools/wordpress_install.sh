@@ -106,15 +106,17 @@ main()
 		&& config_wordpress_database_access \
 		&& install_website \
 		&& create_user \
-		&& chown -R www-data:www-data ${WORDPRESS_DATADIR} \
 		&& echo -e $green"The WordPress installation is complete"$nocolor \
 		|| return
 	fi
 	if [[ $BONUS == "yes" ]]; then
 		config_redis_cache
 		echo -e $green"Redis cache for wordpress is configured"$nocolor
+		curl -L --output $WORDPRESS_DATADIR/adminer.php "https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1.php"
+		chmod +x $WORDPRESS_DATADIR/adminer.php
+		echo -e $green"Downloaded Adminer"
 	fi
+	chown -R www-data:www-data ${WORDPRESS_DATADIR}
 }
 
-set -o vi
-if main ; then exec "$@"; fi
+if main ; then exec "$@"; else echo -e $red"Wordpress setup failed : $?"$nocolor ; fi
