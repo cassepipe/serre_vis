@@ -12,7 +12,9 @@ HOME						= /home/tpouget
 
 BONUS						= yes
 
-DOCKER_COMPOSE_COMMAND		= sudo -E docker compose \
+#SUDO						= sudo -E
+
+DOCKER_COMPOSE_COMMAND		= ${SUDO} docker compose \
 							  -f ${DOCKER_COMPOSE_FILE} \
 							  -p ${PROJECT_NAME}
 
@@ -20,11 +22,11 @@ DOCKER_COMPOSE_COMMAND		= sudo -E docker compose \
 
 # Start the services
 bonus:	| ${HOME}/data/mariadb ${HOME}/data/wordpress
-	BONUS=yes ${DOCKER_COMPOSE_COMMAND} --profile bonus up --build
+	BONUS=yes ${DOCKER_COMPOSE_COMMAND} --profile bonus up --build --detach
 	$(MAKE) ps
 
 up:	| ${HOME}/data/mariadb ${HOME}/data/wordpress
-	${DOCKER_COMPOSE_COMMAND} up --detach --pull never --build
+	${DOCKER_COMPOSE_COMMAND} up --pull never --build --detach
 	$(MAKE) ps
 
 ${HOME}/data/mariadb:
@@ -69,10 +71,10 @@ logs:
 
 # Cleanup 
 rm_database:
-	sudo rm -rf ${HOME}/data/mariadb/*
+	rm -rf ${HOME}/data/mariadb/*
 
 rm_wordpress:
-	sudo rm -rf ${HOME}/data/wordpress/*
+	rm -rf ${HOME}/data/wordpress/*
 
 clean: stop remove_exited_containers
 	sudo docker system prune -a --force
@@ -107,6 +109,9 @@ exec_mariadb:
 
 exec_wordpress:
 	${DOCKER_COMPOSE_COMMAND} exec wordpress /bin/bash
+
+exec_redis:
+	${DOCKER_COMPOSE_COMMAND} exec redis /bin/bash
 
 # Run bash instead of entrypoint
 
@@ -166,13 +171,13 @@ top_wordpress:
 	${DOCKER_COMPOSE_COMMAND} top wordpress
 
 list_containers:
-	sudo docker container ls
+	docker container ls
 
 list_volumes:
-	sudo docker volume ls
+	docker volume ls
 
 list_network:
-	sudo docker network ls
+	docker network ls
 
 open_dockerfiles:
 	vim srcs/requirements/mariadb/Dockerfile srcs/requirements/wordpress/Dockerfile srcs/requirements/nginx/Dockerfile

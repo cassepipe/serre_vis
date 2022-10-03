@@ -50,8 +50,8 @@ config_redis_cache()
 		$WP config set WP_REDIS_HOST redis
 		$WP config set WP_CACHE true --raw
 		$WP config set WP_CACHE_KEY_SALT $SITE_URL
-		#$WP plugin install redis;
-		#$WP plugin activate redis;
+		$WP plugin install redis-cache --activate
+		$WP redis enable
 }
 
 # Sets up our url and admin user
