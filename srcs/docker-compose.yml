@@ -10,6 +10,7 @@ services:
       - mariadb_volume:/var/lib/mysql
     networks:
       - docker_network
+    #restart: on-failure
 
   wordpress:
     build: requirements/wordpress
@@ -20,6 +21,9 @@ services:
       - mariadb
     networks:
       - docker_network
+    environment:
+      - BONUS=${BONUS:-no}
+    #restart: on-failure
 
   nginx:
     build: requirements/nginx
@@ -39,6 +43,8 @@ services:
     # Only service to expose a port to the outside
     networks:
       - docker_network
+    profiles:
+      - bonus
     #restart: on-failure
 
 networks:

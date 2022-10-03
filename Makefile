@@ -8,16 +8,22 @@ PROJECT_NAME 				= inception
 
 DOCKER_COMPOSE_FILE			= srcs/docker-compose.yml
 
-HOME					= /home/tpouget
+HOME						= /home/tpouget
 
-DOCKER_COMPOSE_COMMAND		= sudo docker compose \
+BONUS						= yes
+
+DOCKER_COMPOSE_COMMAND		= sudo -E docker compose \
 							  -f ${DOCKER_COMPOSE_FILE} \
 							  -p ${PROJECT_NAME}
 
 ################################### Rules #####################################
 
 # Start the services
-up: | ${HOME}/data/mariadb ${HOME}/data/wordpress
+bonus:	| ${HOME}/data/mariadb ${HOME}/data/wordpress
+	BONUS=yes ${DOCKER_COMPOSE_COMMAND} --profile bonus up --build
+	$(MAKE) ps
+
+up:	| ${HOME}/data/mariadb ${HOME}/data/wordpress
 	${DOCKER_COMPOSE_COMMAND} up --detach --pull never --build
 	$(MAKE) ps
 
@@ -63,10 +69,10 @@ logs:
 
 # Cleanup 
 rm_database:
-	sudo rm -rf ${HOME}/data/mariadb/
+	sudo rm -rf ${HOME}/data/mariadb/*
 
 rm_wordpress:
-	sudo rm -rf ${HOME}/data/wordpress/
+	sudo rm -rf ${HOME}/data/wordpress/*
 
 clean: stop remove_exited_containers
 	sudo docker system prune -a --force
@@ -82,6 +88,7 @@ remove_all_containers:	stop_all
 
 # Removes persistent data
 fclean: stop rm_database rm_wordpress
+		echo "Hello"	
 		sudo docker system prune -a --force --volumes
 		-sudo docker volume rm -f `sudo docker volume ls -q`
 
@@ -114,6 +121,10 @@ debug_mariadb:
 debug_wordpress:
 	${DOCKER_COMPOSE_COMMAND} build
 	${DOCKER_COMPOSE_COMMAND} run --rm -it --entrypoint "" wordpress /bin/bash
+
+debug_bonus_wordpress:
+	${DOCKER_COMPOSE_COMMAND} build
+	BONUS=yes ${DOCKER_COMPOSE_COMMAND} run --rm -it --entrypoint "" wordpress /bin/bash
 
 debug_redis:
 	${DOCKER_COMPOSE_COMMAND} build
@@ -165,3 +176,6 @@ list_network:
 
 open_dockerfiles:
 	vim srcs/requirements/mariadb/Dockerfile srcs/requirements/wordpress/Dockerfile srcs/requirements/nginx/Dockerfile
+	
+open_wp_script:
+	vim  srcs/requirements/wordpress/tools/wordpress_install.sh 
