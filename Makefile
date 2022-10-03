@@ -8,7 +8,9 @@ PROJECT_NAME 				= inception
 
 DOCKER_COMPOSE_FILE			= srcs/docker-compose.yml
 
-HOME						= /home/tpouget
+USER						= tpouget
+
+HOME						= /home/${USER}
 
 BONUS						= yes
 
@@ -34,6 +36,14 @@ ${HOME}/data/mariadb:
 
 ${HOME}/data/wordpress:
 	sudo mkdir -p ${HOME}/data/wordpress
+
+setup:
+	@echo "Adding ${USER} to the docker group:"
+	sudo usermod -a -G docker ${USER}
+	@echo "${USER} now belongs to:"
+	groups
+	@echo "Adding ${USER} to /etc/hosts:"
+	sudo echo "127.0.0.1	${USER}.42.fr" >> /etc/hosts
 
 # ** Basic docker compose commands **
 
