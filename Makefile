@@ -180,7 +180,6 @@ list_network:
 	docker network ls
 
 open_dockerfiles:
-	vim srcs/requirements/mariadb/Dockerfile srcs/requirements/wordpress/Dockerfile srcs/requirements/nginx/Dockerfile
-	
+	vim srcs/requirements/mariadb/Dockerfile srcs/requirements/wordpress/Dockerfile srcs/requirements/nginx/Dockerfile srcs/requirements/bonus/redis/Dockerfile
 open_wp_script:
 	vim  srcs/requirements/wordpress/tools/wordpress_install.sh 
