@@ -23,19 +23,19 @@ DOCKER_COMPOSE_COMMAND		= ${SUDO} docker compose \
 ################################### Rules #####################################
 
 # Start the services
-bonus:	| ${HOME}/data/mariadb ${HOME}/data/wordpress
-	BONUS=yes ${DOCKER_COMPOSE_COMMAND} --profile bonus up --build --detach
-	$(MAKE) ps
-
 up:	| ${HOME}/data/mariadb ${HOME}/data/wordpress
 	${DOCKER_COMPOSE_COMMAND} up --pull never --build --detach
 	$(MAKE) ps
 
+bonus:	| ${HOME}/data/mariadb ${HOME}/data/wordpress
+	BONUS=yes ${DOCKER_COMPOSE_COMMAND} --profile bonus up --build --detach
+	$(MAKE) ps
+
 ${HOME}/data/mariadb:
-	sudo mkdir -p ${HOME}/data/mariadb
+	mkdir -p ${HOME}/data/mariadb
 
 ${HOME}/data/wordpress:
-	sudo mkdir -p ${HOME}/data/wordpress
+	mkdir -p ${HOME}/data/wordpress
 
 setup:
 	@echo "Adding ${USER} to the docker group:"
@@ -80,6 +80,7 @@ logs:
 	${DOCKER_COMPOSE_COMMAND} logs -f
 
 # Cleanup 
+
 rm_database:
 	sudo rm -rf ${HOME}/data/mariadb/*
 
@@ -100,7 +101,6 @@ remove_all_containers:	stop_all
 
 # Removes persistent data
 fclean: stop rm_database rm_wordpress
-		echo "Hello"	
 		sudo docker system prune -a --force --volumes
 		-sudo docker volume rm -f `sudo docker volume ls -q`
 
@@ -191,5 +191,6 @@ list_network:
 
 open_dockerfiles:
 	vim srcs/requirements/mariadb/Dockerfile srcs/requirements/wordpress/Dockerfile srcs/requirements/nginx/Dockerfile srcs/requirements/bonus/redis/Dockerfile srcs/requirements/bonus/ftp/Dockerfile
+
 open_wp_script:
 	vim  srcs/requirements/wordpress/tools/wordpress_install.sh 

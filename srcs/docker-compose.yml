@@ -10,7 +10,7 @@ services:
       - docker_network
     volumes:
       - mariadb_volume:/var/lib/mysql
-    #restart: on-failure
+    restart: on-failure
 
   wordpress:
     build: requirements/wordpress
@@ -25,7 +25,7 @@ services:
       - docker_network
     volumes:
       - wordpress_volume:/var/www/wordpress
-    #restart: on-failure
+    restart: on-failure
 
   nginx:
     build: requirements/nginx
@@ -38,7 +38,7 @@ services:
       - "443:443"
     volumes:
       - wordpress_volume:/var/www/wordpress
-    #restart: on-failure
+    restart: on-failure
     
   redis:
     build: requirements/bonus/redis
@@ -47,22 +47,7 @@ services:
       - docker_network
     profiles:
       - bonus
-    #restart: on-failure
-    
-  #ftp:
-  #  build: requirements/bonus/ftp
-  #  env_file: .env
-  #  depends_on:
-  #    - wordpress
-  #  volumes:
-  #    - wordpress_volume:/var/www/wordpress
-  #  networks:
-  #    - docker_network
-  #  ports:
-  #    - "21:21"
-  #  profiles:
-  #    - bonus
-  #  #restart: on-failure
+    restart: on-failure
     
 networks:
   docker_network:
