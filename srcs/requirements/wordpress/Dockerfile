@@ -6,7 +6,6 @@ FROM debian:buster
 # Installing dependancies listed by the wordpress package on Debian
 RUN apt update && apt install -y \
 		curl \
-		procps \
 		php \
 		php-gd \
 		php-mysql \
@@ -14,7 +13,6 @@ RUN apt update && apt install -y \
 		php-getid3 \
 		php-fpm \
 		mariadb-client \
-		vim \
 && apt clean #Doc recommends using `rm -rf /Ican'tremember`
 
 # Create the www-data user

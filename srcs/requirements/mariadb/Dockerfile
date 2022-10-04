@@ -3,8 +3,6 @@ FROM debian:buster
 
 RUN apt update && apt install -y \
 	mariadb-server \
-	procps \
-	vim \
 && apt clean
 
 COPY ./tools/init_database.sh	/

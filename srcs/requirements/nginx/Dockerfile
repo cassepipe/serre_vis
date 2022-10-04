@@ -2,7 +2,6 @@
 FROM debian:buster
 
 RUN apt update && apt install -y \
-	procps \
 	nginx \
 	openssl \
 && apt clean
