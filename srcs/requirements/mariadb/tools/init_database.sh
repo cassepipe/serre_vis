@@ -20,6 +20,8 @@ create_database()
 			DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 			DROP DATABASE IF EXISTS test;
 			DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';
+			ALTER USER root@localhost IDENTIFIED WITH mysql_native_password;
+			ALTER USER root@localhost IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';
 			FLUSH PRIVILEGES;
 			EOF
 }
@@ -28,12 +30,14 @@ main()
 {
 	service mysql start
 	sleep 1
-	create_database && echo -e $cyan "Database created and secured" $nocolor || return
+	if test mysql -e "CREATE DATABASE $MYSQL_DATABASE"; then
+		create_database && echo -e $cyan "Database created and secured" $nocolor || return
+	fi
 	echo -e $cyan "Here are the current databases :" $nocolor
-	mysqlshow
+	mysqlshow -u root --password=$MYSQL_ROOT_PASSWORD
 	echo -e $cyan "Here are the current users@host :" $nocolor
-	mysql -e "SELECT user, host FROM mysql.user"
+	mysql -u root --password=$MYSQL_ROOT_PASSWORD -e "SELECT user, host FROM mysql.user"
 	service mysql stop
 }
 
-main && exec "$@" || echo -e $red "Failed to create database or to exec entrypoint command" $nocolor
+main; exec "$@" || echo -e $red "Failed to create database or to exec entrypoint command" $nocolor
