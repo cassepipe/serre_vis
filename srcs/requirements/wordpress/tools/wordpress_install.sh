@@ -79,8 +79,8 @@ create_user()
 
 main()
 {
-	echo -e $cyan"Installing the Wordpress CLI..."$nocolor
-	install_wp_cli || return
+	#echo -e $cyan"Installing the Wordpress CLI..."$nocolor
+	#install_wp_cli || return
 	echo -e $cyan"Downloading the Wordpress directory..."$nocolor
 	download_wordpress || return
 	if [[ -f "${WORDPRESS_DATADIR}/wp-config.php" ]]

@@ -21,6 +21,13 @@ RUN id www-data || useradd www-data
 # Copy php pool/user specific config file
 COPY ./conf/www.conf	/etc/php/7.3/fpm/pool.d/
 
+# Install cli tool
+RUN curl --output /usr/local/bin/wp  https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+RUN chmod +x /usr/local/bin/wp
+
+# Download wordpress directory
+#RUN /usr/local/bin/wp --path=/var/www/wordpress --allow-root core download --force
+
 # Copy the wordpress installation script
 COPY ./tools/wordpress_install.sh	/
 RUN chmod +x /wordpress_install.sh
