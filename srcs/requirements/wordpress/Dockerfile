@@ -13,7 +13,7 @@ RUN apt update && apt install -y \
 		php-getid3 \
 		php-fpm \
 		mariadb-client \
-&& apt clean #Doc recommends using `rm -rf /Ican'tremember`
+&& apt clean
 
 # Create the www-data user
 RUN id www-data || useradd www-data 
