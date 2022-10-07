@@ -28,7 +28,7 @@ RUN chmod +x /usr/local/bin/wp
 # The cli complains about not having the permission to create the directory although we are root...
 RUN	mkdir -p /var/www/wordpress
 # Download wordpress directory
-RUN /usr/local/bin/wp --path=/var/www/wordpress --allow-root core download --force
+RUN /usr/local/bin/wp --path=/var/www/wordpress --allow-root core download
 
 # Copy the wordpress installation script
 COPY ./tools/wordpress_install.sh	/
