@@ -194,3 +194,7 @@ open_dockerfiles:
 
 open_wp_script:
 	vim  srcs/requirements/wordpress/tools/wordpress_install.sh 
+
+open_mariadb:
+	vim srcs/requirements/mariadb/
+
