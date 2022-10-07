@@ -25,6 +25,8 @@ COPY ./conf/www.conf	/etc/php/7.3/fpm/pool.d/
 RUN curl --output /usr/local/bin/wp  https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 RUN chmod +x /usr/local/bin/wp
 
+# The cli complains about not having the permission to create the directory although we are root...
+RUN	mkdir -p /var/www/wordpress
 # Download wordpress directory
 RUN /usr/local/bin/wp --path=/var/www/wordpress --allow-root core download --force
 
