@@ -4,8 +4,6 @@ services:
     container_name: mariadb
     build: requirements/mariadb
     env_file: .env
-    networks:
-      - docker_network
     volumes:
       - mariadb_volume:/var/lib/mysql
     #restart: on-failure
@@ -20,8 +18,6 @@ services:
     env_file: .env
     environment:
       - BONUS=${BONUS:-no}
-    networks:
-      - docker_network
     volumes:
       - wordpress_volume:/var/www/wordpress
     #restart: on-failure
@@ -31,8 +27,6 @@ services:
     build: requirements/nginx
     depends_on:
       - wordpress
-    networks:
-      - docker_network
     # Only service to expose a port to the outside
     ports:
       - "443:443"
@@ -43,15 +37,9 @@ services:
   redis:
     container_name: redis
     build: requirements/bonus/redis
-    networks:
-      - docker_network
     profiles:
       - bonus
     #restart: on-failure
-    
-networks:
-  docker_network:
-    driver: bridge
 
 # We are using "named" bind mounts
 volumes:
