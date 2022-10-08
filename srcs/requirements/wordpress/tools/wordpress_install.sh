@@ -29,7 +29,7 @@ wait_for_database()
 	while ! mysql $MYSQL_DATABASE -e "quit"  --user=$MYSQL_USER  --password=$MYSQL_PASSWORD  --protocol=TCP  --host=mariadb ;
 		do
 			echo -e $cyan "Waiting wordpress database..." $nocolor
-			sleep 2
+			sleep 5
 		done
 }
 

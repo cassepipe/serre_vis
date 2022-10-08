@@ -5,6 +5,10 @@ RUN apt update && apt install -y \
 	mariadb-server \
 && apt clean
 
+RUN apt-get -y update && apt-get -y install mariadb-client mariadb-server \
+	&& mkdir -p /var/run/mysqld \
+	&& chown -R mysql:mysql /var/run/mysqld && chmod 777 /var/run/mysqld
+
 COPY ./tools/init_database.sh	/
 RUN chmod +x ./init_database.sh
 

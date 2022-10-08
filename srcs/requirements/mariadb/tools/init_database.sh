@@ -23,15 +23,16 @@ secure_database()
 			DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 			DROP DATABASE IF EXISTS test;
 			DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';
-			--ALTER USER root@localhost IDENTIFIED WITH mysql_native_password;
-			--ALTER USER root@localhost IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';
+			ALTER USER root@localhost IDENTIFIED WITH mysql_native_password;
+			ALTER USER root@localhost IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';
 			FLUSH PRIVILEGES;
 			EOF
 }
 
 main()
 {
-	service mysql start
+	#service mysql start
+	mysqld &
 	sleep 1
 	if mysql -e "CREATE DATABASE $MYSQL_DATABASE"; then
 		create_wordpress_database_user && echo -e $cyan"Database and database user created" $nocolor || return
@@ -43,7 +44,8 @@ main()
 	mysqlshow -u root --password=$MYSQL_ROOT_PASSWORD
 	echo -e $cyan"Here are the current users@host :" $nocolor
 	mysql -u root --password=$MYSQL_ROOT_PASSWORD -e "SELECT user, host, password FROM mysql.user"
-	service mysql stop
+	kill %1
+	#service mysql stop
 }
 
 main; exec "$@" || echo -e $red "Failed to create database or to exec entrypoint command" $nocolor
