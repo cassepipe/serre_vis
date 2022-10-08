@@ -4,7 +4,7 @@
 !_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
 !_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
 !_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
-!_TAG_PROC_CWD	/tmp/serre_vis/	//
+!_TAG_PROC_CWD	/home/tpouget/test/	//
 !_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
 !_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
 !_TAG_PROGRAM_URL	https://ctags.io/	/official site/
@@ -18,6 +18,7 @@ COM	srcs/requirements/wordpress/conf/php.ini	/^[COM]$/;"	s
 DOCKER_COMPOSE_COMMAND	Makefile	/^DOCKER_COMPOSE_COMMAND		= ${SUDO} docker compose \\$/;"	m
 DOCKER_COMPOSE_FILE	Makefile	/^DOCKER_COMPOSE_FILE			= srcs\/docker-compose.yml$/;"	m
 Date	srcs/requirements/wordpress/conf/php.ini	/^[Date]$/;"	s
+EOF	srcs/requirements/mariadb/tools/init_database.sh	/^			<<-EOF$/;"	h
 EOF	srcs/requirements/mariadb/tools/init_database.sh	/^	mysql -u root --password=$MYSQL_ROOT_PASSWORD <<-EOF$/;"	h
 HOME	Makefile	/^HOME						= \/home\/${USER}$/;"	m
 MySQLi	srcs/requirements/wordpress/conf/php.ini	/^[MySQLi]$/;"	s
@@ -66,7 +67,7 @@ cookie_lifetime	srcs/requirements/wordpress/conf/php.ini	/^session.cookie_lifeti
 cookie_path	srcs/requirements/wordpress/conf/php.ini	/^session.cookie_path = \/$/;"	k	section:Session
 cookie_samesite	srcs/requirements/wordpress/conf/php.ini	/^session.cookie_samesite =$/;"	k	section:Session
 create_user	srcs/requirements/wordpress/tools/wordpress_install.sh	/^create_user()$/;"	f
-create_wordpress_database_user	srcs/requirements/mariadb/tools/init_database.sh	/^create_wordpress_database_user()$/;"	f
+create_wordpress_database	srcs/requirements/mariadb/tools/init_database.sh	/^create_wordpress_database()$/;"	f
 curl	srcs/requirements/wordpress/conf/php.ini	/^[curl]$/;"	s
 dba	srcs/requirements/wordpress/conf/php.ini	/^[dba]$/;"	s
 debug_bonus_wordpress	Makefile	/^debug_bonus_wordpress:$/;"	t
