@@ -31,7 +31,6 @@ secure_database()
 
 main()
 {
-	#service mysql start
 	mysqld &
 	sleep 1
 	if mysql -e "CREATE DATABASE $MYSQL_DATABASE"; then
@@ -45,7 +44,7 @@ main()
 	echo -e $cyan"Here are the current users@host :" $nocolor
 	mysql -u root --password=$MYSQL_ROOT_PASSWORD -e "SELECT user, host, password FROM mysql.user"
 	kill %1
-	#service mysql stop
+	wait
 }
 
-main; exec "$@" || echo -e $red "Failed to create database or to exec entrypoint command" $nocolor
+main; exec "$@" 

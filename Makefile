@@ -24,7 +24,7 @@ DOCKER_COMPOSE_COMMAND		= ${SUDO} docker compose \
 
 # Start the services
 up:	| ${HOME}/data/mariadb ${HOME}/data/wordpress
-	${DOCKER_COMPOSE_COMMAND} up --pull never --build #--detach
+	${DOCKER_COMPOSE_COMMAND} up --pull never --build --detach
 	$(MAKE) ps
 
 bonus:	| ${HOME}/data/mariadb ${HOME}/data/wordpress
