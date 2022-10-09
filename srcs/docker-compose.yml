@@ -6,7 +6,7 @@ services:
     env_file: .env
     volumes:
       - mariadb_volume:/var/lib/mysql
-    #restart: on-failure
+    restart: on-failure
 
   wordpress:
     container_name: wordpress
@@ -20,7 +20,7 @@ services:
       - BONUS=${BONUS:-no}
     volumes:
       - wordpress_volume:/var/www/wordpress
-    #restart: on-failure
+    restart: on-failure
 
   nginx:
     container_name: nginx
@@ -32,14 +32,14 @@ services:
       - "443:443"
     volumes:
       - wordpress_volume:/var/www/wordpress
-    #restart: on-failure
+    restart: on-failure
     
   redis:
     container_name: redis
     build: requirements/bonus/redis
     profiles:
       - bonus
-    #restart: on-failure
+    restart: on-failure
 
 # We are using "named" bind mounts
 volumes:
